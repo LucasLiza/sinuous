@@ -4,6 +4,7 @@
 <head>
 	<meta charset="UTF-8">
 	<script src="../scripts/dot.js"></script>
+	<link rel="stylesheet" href="../styles/style.css">
 	<title>Sinuous</title>
 </head>
 
@@ -18,6 +19,8 @@
 		});
 
 		var canvas = document.getElementById('canvasTest');
+		canvas.width = document.body.clientWidth; //document.width is obsolete
+		canvas.height = document.body.clientWidth; //document.height is obsolete
 		var context = canvas.getContext('2d');
 		myDot.draw(context);
 	</script>
