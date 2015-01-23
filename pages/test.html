@@ -14,16 +14,19 @@
 	</canvas>
 
 	<script>
-		var myDot = new Dot(10, 'red', {
-			x: 10,
-			y: 90
-		});
+		var myDot = new Dot(10, 'red', new Vector(200, 100));
 
 		var canvas = document.getElementById('canvasTest');
 		canvas.width = document.body.clientWidth; //document.width is obsolete
 		canvas.height = document.body.clientWidth; //document.height is obsolete
 		var context = canvas.getContext('2d');
-		myDot.draw(context);
+
+		setInterval(function () {
+			context.fillStyle = 'black';
+			context.fillRect(0, 0, canvas.width, canvas.height);
+			myDot.draw(context);
+			myDot.update(0.1);
+		}, 1000 / 60);
 	</script>
 
 
