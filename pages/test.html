@@ -5,6 +5,7 @@
 	<meta charset="UTF-8">
 	<script src="../scripts/dot.js"></script>
 	<script src="../scripts/utils/vector.js"></script>
+	<script src="../scripts/app.js"></script>
 	<link rel="stylesheet" href="../styles/style.css">
 	<title>Sinuous</title>
 </head>
@@ -19,13 +20,12 @@
 		var canvas = document.getElementById('canvasTest');
 		canvas.width = document.body.clientWidth; //document.width is obsolete
 		canvas.height = document.body.clientWidth; //document.height is obsolete
-		var context = canvas.getContext('2d');
+
+		var game = new Sinuous(canvas);
+		game.init();
 
 		setInterval(function () {
-			context.fillStyle = 'black';
-			context.fillRect(0, 0, canvas.width, canvas.height);
-			myDot.draw(context);
-			myDot.update(0.1);
+			game.drawObjects();
 		}, 1000 / 60);
 	</script>
 
