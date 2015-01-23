@@ -17,6 +17,18 @@ var Sinuous = function (canvas) {
 		for (var enemy in this.enemies) {
 			this.enemies[enemy].draw(this.context);
 			this.enemies[enemy].update(0.1);
+			this.clearObjects();
+		}
+	};
+
+	this.clearObjects = function () {
+		for (var enemy in this.enemies) {
+			var currentPosition = new Vector(this.enemies[enemy].position.x, this.enemies[enemy].position.y);
+			// remove from the enemies array, the dots that are out of bounds
+			if (currentPosition.x < 0 || currentPosition.x > this.canvas.width || currentPosition.y < 0 || currentPosition > this.canvas.height) {
+				this.enemies.splice(enemy, 1);
+				//	console.log("removed -> " + enemy);
+			}
 		}
 	};
 };
