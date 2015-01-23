@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<script src="../scripts/dot.js"></script>
+	<title>Sinuous</title>
+</head>
+
+<body>
+	<canvas id="canvasTest">
+	</canvas>
+
+	<script>
+		var myDot = new Dot(10, 'red', {
+			x: 10,
+			y: 90
+		});
+
+		var canvas = document.getElementById('canvasTest');
+		var context = canvas.getContext('2d');
+		myDot.draw(context);
+	</script>
+
+
+</body>
+
+</html>
