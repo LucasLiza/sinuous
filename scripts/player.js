@@ -8,16 +8,16 @@ var Player = function (size, color) {
 
 	this.draw = function (context) {
 		//Draw player trail
-		//context.beginPath();
-		//	context.strokeStyle = this.color;
-		//	context.lineWidth = 2;
-		//
-		//for (var i = 0; i < this.trail.length; i++) {
-		//	context.lineTo(this.trail[i].x, this.trail[i].y);
-		//}
+		context.beginPath();
+		context.strokeStyle = this.color;
+		context.lineWidth = 2;
 
-		//context.stroke();
-		//context.closePath();
+		for (var i = 0; i < this.trail.length; i++) {
+			context.lineTo(this.trail[i].x, this.trail[i].y);
+		}
+
+		context.stroke();
+		context.closePath();
 
 		//Draw player
 		context.beginPath();
@@ -28,7 +28,10 @@ var Player = function (size, color) {
 	};
 
 	this.update = function (position, gameVelocity) {
-		//this.trail.push(this.position);
+		this.trail.push(position);
+		if (this.trail.length > 30) {
+			this.trail.shift();
+		}
 		this.position = position;
 
 
@@ -37,8 +40,6 @@ var Player = function (size, color) {
 			this.trail[i].add(gameVelocity);
 		}
 
-		if (this.trail.length > 30) {
-			console.log(this.trail.shift());
-		}
+
 	};
 };

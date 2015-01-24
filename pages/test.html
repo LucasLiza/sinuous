@@ -21,11 +21,10 @@
 		canvas.height = document.body.clientWidth; //document.height is obsolete
 
 		document.addEventListener('mousemove', documentMouseMoveHandler, false);
-		var mouse = new Vector(0, 0);
+		var mouse;
 
 		function documentMouseMoveHandler(event) {
-			mouse.x = event.clientX;
-			mouse.y = event.clientY;
+			mouse = new Vector(event.clientX, event.clientY);
 		}
 
 		var game = new Sinuous(canvas);
