@@ -1,9 +1,10 @@
 "use strict";
-var Dot = function (radius, color, position) {
+var Dot = function (radius, color, position, velocity, force) {
 	this.radius = radius;
 	this.color = color;
+	this.force = force;
 	this.position = position;
-	this.velocity = new Vector(1, 1);
+	this.velocity = velocity;
 
 	this.draw = function (context) {
 		context.beginPath();
@@ -12,10 +13,11 @@ var Dot = function (radius, color, position) {
 		context.fill();
 	};
 
-	this.update = function (difficulty) {
-		this.velocity.x += difficulty;
-		this.velocity.y += difficulty;
+	this.setVelocity = function (newv) {
+		this.velocity = Vector.mult(newv, this.force);
+	};
 
+	this.update = function () {
 		this.position.add(this.velocity);
 
 	};
