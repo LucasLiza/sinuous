@@ -21,7 +21,7 @@ var Sinuous = function (canvas) {
 		while (--numEnemies >= 0) {
 			var enemy = new Dot(3 + (Math.random() * 4), 'red', this.generatePosition(), this.generateStartVelocity(), 1 + (Math.random() * 0.4));
 			this.enemies.push(enemy);
-			console.log('created enemy ->' + enemy);
+			//console.log('created enemy ->' + enemy);
 		}
 	};
 
@@ -46,6 +46,8 @@ var Sinuous = function (canvas) {
 		this.context.fillStyle = 'black';
 		this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
+		this.player.draw(this.context);
+		this.player.drawTrail(this.context);
 		for (var enemy in this.enemies) {
 			this.enemies[enemy].draw(this.context);
 		}
@@ -55,7 +57,7 @@ var Sinuous = function (canvas) {
 	this.updateObjects = function (velocity, playerPosition) {
 
 		this.player.update(playerPosition, velocity);
-
+		console.log(playerPosition);
 		for (var enemy in this.enemies) {
 			this.enemies[enemy].setVelocity(velocity);
 			this.enemies[enemy].update();
@@ -66,14 +68,14 @@ var Sinuous = function (canvas) {
 	};
 
 	this.clearObjects = function () {
-		this.player.draw(this.context);
+
 
 		for (var enemy in this.enemies) {
 			var currentPosition = new Vector(this.enemies[enemy].position.x, this.enemies[enemy].position.y);
 			// remove from the enemies array, the dots that are out of bounds
 			if (currentPosition.x < 0 || currentPosition.x > this.SCREEN_WIDTH + 20 || currentPosition.y < -20 || currentPosition.y > this.SCREEN_WIDTH + 20) {
 				this.enemies.splice(enemy, 1);
-				console.log("removed -> " + enemy);
+				//console.log("removed -> " + enemy);
 			}
 		}
 
@@ -87,18 +89,18 @@ var Sinuous = function (canvas) {
 
 	this.loop = function (mouse) {
 		if (this.playing) {
+			this.increaseDifficulty(0.0007);
 			var diffVelocity = Vector.mult(this.defaulVelocity, this.difficulty);
 
 			if (this.enemies.length < 25 * this.difficulty) {
 				this.createEnemies();
 			}
-
+			this.updateObjects(diffVelocity, mouse);
 			this.drawObjects();
 			//console.log(mouse);
 
-			this.updateObjects(diffVelocity, mouse);
+
 			this.clearObjects();
-			this.increaseDifficulty(0.0007);
 		}
 	};
 };
