@@ -6,6 +6,7 @@
 	<script src="../scripts/dot.js"></script>
 	<script src="../scripts/utils/vector.js"></script>
 	<script src="../scripts/app.js"></script>
+	<script src="../scripts/player.js"></script>
 	<link rel="stylesheet" href="../styles/style.css">
 	<title>Sinuous</title>
 </head>
@@ -15,17 +16,23 @@
 	</canvas>
 
 	<script>
-		var myDot = new Dot(10, 'red', new Vector(200, 100));
-
 		var canvas = document.getElementById('canvasTest');
 		canvas.width = document.body.clientWidth; //document.width is obsolete
 		canvas.height = document.body.clientWidth; //document.height is obsolete
+
+		document.addEventListener('mousemove', documentMouseMoveHandler, false);
+		var mouse = new Vector(0, 0);
+
+		function documentMouseMoveHandler(event) {
+			mouse.x = event.clientX;
+			mouse.y = event.clientY;
+		}
 
 		var game = new Sinuous(canvas);
 		game.init();
 
 		setInterval(function () {
-			game.loop();
+			game.loop(mouse);
 		}, 1000 / 60);
 	</script>
 

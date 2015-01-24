@@ -2,7 +2,6 @@
 var Sinuous = function (canvas) {
 	this.canvas = canvas;
 	this.enemies = [];
-	this.player = 1;
 	this.context = this.canvas.getContext("2d");
 	this.MAX_ENEMIES = 30;
 	this.playing = true;
@@ -10,6 +9,8 @@ var Sinuous = function (canvas) {
 	this.SCREEN_WIDTH = canvas.width;
 	this.difficulty = 1.000;
 	this.defaulVelocity = new Vector(-1.3, 1);
+	this.player = new Player(5, 'green');
+
 	this.init = function () {
 		this.createEnemies();
 	};
@@ -44,20 +45,29 @@ var Sinuous = function (canvas) {
 	this.drawObjects = function () {
 		this.context.fillStyle = 'black';
 		this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
 		for (var enemy in this.enemies) {
 			this.enemies[enemy].draw(this.context);
 		}
 
 	};
 
-	this.updateObjects = function (velocity) {
+	this.updateObjects = function (velocity, playerPosition) {
+
+		this.player.update(playerPosition, velocity);
+
 		for (var enemy in this.enemies) {
 			this.enemies[enemy].setVelocity(velocity);
 			this.enemies[enemy].update();
 		}
+
+
+
 	};
 
 	this.clearObjects = function () {
+		this.player.draw(this.context);
+
 		for (var enemy in this.enemies) {
 			var currentPosition = new Vector(this.enemies[enemy].position.x, this.enemies[enemy].position.y);
 			// remove from the enemies array, the dots that are out of bounds
@@ -75,15 +85,18 @@ var Sinuous = function (canvas) {
 	};
 
 
-	this.loop = function () {
-		var diffVelocity = Vector.mult(this.defaulVelocity, this.difficulty);
+	this.loop = function (mouse) {
 		if (this.playing) {
+			var diffVelocity = Vector.mult(this.defaulVelocity, this.difficulty);
+
 			if (this.enemies.length < 25 * this.difficulty) {
 				this.createEnemies();
 			}
 
 			this.drawObjects();
-			this.updateObjects(diffVelocity);
+			//console.log(mouse);
+
+			this.updateObjects(diffVelocity, mouse);
 			this.clearObjects();
 			this.increaseDifficulty(0.0007);
 		}
