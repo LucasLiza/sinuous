@@ -19,7 +19,7 @@ var Sinuous = function (canvas) {
 		//Every time create between 10 and 15 enemies
 		var numEnemies = 10 + (Math.random() * 15);
 		while (--numEnemies >= 0) {
-			var enemy = new Dot(3 + (Math.random() * 4), 'red', this.generatePosition(), this.generateStartVelocity(), 1 + (Math.random() * 0.4));
+			var enemy = new Particle(3 + (Math.random() * 4), 'red', this.generatePosition(), this.generateStartVelocity(), 1 + (Math.random() * 0.4));
 			this.enemies.push(enemy);
 			//console.log('created enemy ->' + enemy);
 		}
@@ -29,7 +29,7 @@ var Sinuous = function (canvas) {
 		return new Vector(-4 + Math.random() * 8, -4 + Math.random() * 8);
 	};
 
-	this.generatePosition = function (spreadFactor) {
+	this.generatePosition = function () {
 		var position = new Vector(0, 0);
 		if (Math.random() > 0.5) {
 			position.x = Math.random() * this.SCREEN_WIDTH;
@@ -54,22 +54,16 @@ var Sinuous = function (canvas) {
 
 	};
 
-	this.updateObjects = function (velocity, playerPosition) {
-
+	this.updateObjects = function (playerPosition, velocity) {
 		this.player.update(playerPosition, velocity);
-		console.log(playerPosition);
+
 		for (var enemy in this.enemies) {
 			this.enemies[enemy].setVelocity(velocity);
 			this.enemies[enemy].update();
 		}
-
-
-
 	};
 
 	this.clearObjects = function () {
-
-
 		for (var enemy in this.enemies) {
 			var currentPosition = new Vector(this.enemies[enemy].position.x, this.enemies[enemy].position.y);
 			// remove from the enemies array, the dots that are out of bounds
@@ -78,8 +72,6 @@ var Sinuous = function (canvas) {
 				//console.log("removed -> " + enemy);
 			}
 		}
-
-		//this.createEnemies();
 	};
 
 	this.increaseDifficulty = function (amount) {
@@ -92,10 +84,11 @@ var Sinuous = function (canvas) {
 			this.increaseDifficulty(0.0007);
 			var diffVelocity = Vector.mult(this.defaulVelocity, this.difficulty);
 
-			if (this.enemies.length < 25 * this.difficulty) {
+			if (this.enemies.length < this.MAX_ENEMIES * this.difficulty) {
 				this.createEnemies();
 			}
-			this.updateObjects(diffVelocity, mouse);
+
+			this.updateObjects(mouse, diffVelocity);
 			this.drawObjects();
 			//console.log(mouse);
 
