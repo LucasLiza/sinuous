@@ -2,6 +2,8 @@
 var Sinuous = function (canvas) {
 	this.canvas = canvas;
 	this.enemies = [];
+	this.boots = [];
+	this.score = 0;
 	this.context = this.canvas.getContext("2d");
 	this.MAX_ENEMIES = 30;
 	this.playing = true;
@@ -78,10 +80,19 @@ var Sinuous = function (canvas) {
 		this.difficulty += amount;
 	};
 
+	this.updateScore = function () {
+		var lastPlayerPosition = this.player.trail[this.player.trail.length] || this.player.position;
+
+		this.score += 0.3 * this.difficulty;
+		this.score += Vector.distance(lastPlayerPosition, this.player.position);
+	};
+
 
 	this.loop = function (mouse) {
 		if (this.playing) {
-			this.increaseDifficulty(0.0007);
+			this.increaseDifficulty(0.0008);
+			this.updateScore(this.score);
+			console.log(this.score);
 			var diffVelocity = Vector.mult(this.defaulVelocity, this.difficulty);
 
 			if (this.enemies.length < this.MAX_ENEMIES * this.difficulty) {
