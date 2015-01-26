@@ -2,14 +2,15 @@
 /*jslint plusplus: true*/
 var Sinuous = function (canvas) {
 	"use strict";
-	var score = 0,
+	var hud,
+		time,
+		score = 0,
 		difficulty = 1.000,
 		defaultVelocity = new Vector(-1.3, 1),
 		playing = true,
 		ENEMIES_FACTOR = 0,
 		SCREEN_HEIGHT = canvas.height,
 		SCREEN_WIDTH = canvas.width;
-	
 	this.canvas = canvas;
 	this.enemies = [];
 	this.boosts = [];
@@ -17,7 +18,9 @@ var Sinuous = function (canvas) {
 	this.player = new Player(5, 'green');
 
 	this.init = function () {
-		this.createEnemies();
+		hud = document.getElementById("hud");
+		time = new Date();
+		//this.createEnemies();
 	};
 
 	this.createEnemies = function () {
@@ -35,10 +38,9 @@ var Sinuous = function (canvas) {
 		var diffParticle, diffBoost, gravityBoost, gravityParticle, clearBoost, clearParticle, availableBoosts, position = this.generatePosition();
 		
 		function rand(min, max) {
-			var offset = min;
-			var range = (max - min) + 1;
-			var randomNumber = Math.floor( Math.random() * range) + offset;
-			return randomNumber;
+			var offset = min, range = (max - min) + 1;
+			
+			return Math.floor(Math.random() * range) + offset;
 		}
 		//console.log("position -> "+position.x +", "+ position.y);
 		diffParticle = new Particle(10, 'green', position, defaultVelocity, 1 + (Math.random() * 0.4));
@@ -48,6 +50,7 @@ var Sinuous = function (canvas) {
 		diffBoost = new Boost("diff", diffParticle, function () { difficulty -= 0.0007; }, 100);
 		gravityBoost = new Boost("gravity", gravityParticle, function () { difficulty -= 0.0007; }, 100);
 		clearBoost = new Boost("clear", clearParticle, function () { difficulty -= 0.0007; }, 100);
+		
 		availableBoosts = [diffBoost, gravityBoost, clearBoost];
 		
 		//returns random boost from boosts array
@@ -152,20 +155,32 @@ var Sinuous = function (canvas) {
 		score += 0.3 * difficulty;
 		score += Vector.distance(lastPlayerPosition, this.player.position);
 	};
+	
+	this.updateHUD = function () {
+		
+		var hudText,
+			currentTime = new Date(),
+			scoreText = "Score: <span>" + Math.floor(score) + "</span>",
+			timeText = " Time: <span>" + ((currentTime.getTime() - time.getTime())/1000) + "</span>";
+		
+		hudText = scoreText + timeText;
+		hud.innerHTML = hudText;
+	};
 
 
 	this.loop = function (mouse) {
 		var diffVelocity, chanceOfBoost = Math.random();
 		if (playing) {
 			this.increaseDifficulty(0.0008);
-			this.updateScore(score);
+			this.updateScore();
 			//console.log(this.score);
 			diffVelocity = Vector.mult(defaultVelocity, difficulty);
 
 			if (this.enemies.length < ENEMIES_FACTOR * this.difficulty) {
 				this.createEnemies();
 			}
-			console.log(chanceOfBoost);
+			
+			//console.log(chanceOfBoost);
 			if (chanceOfBoost > 0.9975) {
 				//console.log("created boost");
 				this.boosts.push(this.generateBoost());
@@ -175,7 +190,7 @@ var Sinuous = function (canvas) {
 			this.drawObjects();
 			//console.log(mouse);
 
-
+			this.updateHUD();
 			this.clearObjects();
 		}
 		
