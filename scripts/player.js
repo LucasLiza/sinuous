@@ -40,7 +40,7 @@ Player.prototype.update = function (position, gameVelocity) {
 	this.position.x += (position.x - this.position.x) * 0.13;
 	this.position.y += (position.y - this.position.y) * 0.13;
 	this.trail.push(this.position.clone());
-	if (this.trail.length > 60) {
+	if (this.trail.length > 40) {
 		this.trail.shift();
 	}
 	//console.log(this.position);

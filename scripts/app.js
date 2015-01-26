@@ -32,10 +32,26 @@ var Sinuous = function (canvas) {
 	};
 	
 	this.generateBoost = function () {
-		var particle, position = this.generatePosition();
+		var diffParticle, diffBoost, gravityBoost, gravityParticle, clearBoost, clearParticle, availableBoosts, position = this.generatePosition();
+		
+		function rand(min, max) {
+			var offset = min;
+			var range = (max - min) + 1;
+			var randomNumber = Math.floor( Math.random() * range) + offset;
+			return randomNumber;
+		}
 		//console.log("position -> "+position.x +", "+ position.y);
-		particle = new Particle(9, 'green', position, defaultVelocity, 1 + (Math.random() * 0.4));
-		return new Boost("speed", particle, function () { difficulty -= 0.0007; }, 100);
+		diffParticle = new Particle(10, 'green', position, defaultVelocity, 1 + (Math.random() * 0.4));
+		gravityParticle = new Particle(10, 'blue', position, defaultVelocity, 1 + (Math.random() * 0.4));
+		clearParticle = new Particle(10, 'purple', position, defaultVelocity, 1 + (Math.random() * 0.5));
+		
+		diffBoost = new Boost("diff", diffParticle, function () { difficulty -= 0.0007; }, 100);
+		gravityBoost = new Boost("gravity", gravityParticle, function () { difficulty -= 0.0007; }, 100);
+		clearBoost = new Boost("clear", clearParticle, function () { difficulty -= 0.0007; }, 100);
+		availableBoosts = [diffBoost, gravityBoost, clearBoost];
+		
+		//returns random boost from boosts array
+		return availableBoosts[rand(0, availableBoosts.length - 1)];
 	};
 	
 	
@@ -98,16 +114,29 @@ var Sinuous = function (canvas) {
 		}
 		
 	};
-
+	
+	this.isOutOfScreen = function (position) {
+		return position.x < 0 || position.x > this.SCREEN_WIDTH + 20 || position.y < -20 || position.y > this.SCREEN_WIDTH + 20;
+	};
 	this.clearObjects = function () {
-		var enemy, currentPosition;
+		var boost, enemy, currentPosition;
 		for (enemy in this.enemies) {
 			if (this.enemies.hasOwnProperty(enemy)) {
 				currentPosition = new Vector(this.enemies[enemy].position.x, this.enemies[enemy].position.y);
 			// remove from the enemies array, the dots that are out of bounds
-				if (currentPosition.x < 0 || currentPosition.x > this.SCREEN_WIDTH + 20 || currentPosition.y < -20 || currentPosition.y > this.SCREEN_WIDTH + 20) {
+				if (this.isOutOfScreen(currentPosition)) {
 					this.enemies.splice(enemy, 1);
 				//console.log("removed -> " + enemy);
+				}
+			}
+		}
+		
+		for (boost in this.boosts) {
+			if (this.boosts.hasOwnProperty(boost)) {
+				currentPosition = new Vector(this.boosts[boost].particle.position.x, this.boosts[boost].particle.position.y);
+				if (this.isOutOfScreen(currentPosition)) {
+					this.boosts.splice(boost, 1);
+					//console.log("removed boost -> " + boost);
 				}
 			}
 		}
@@ -136,8 +165,8 @@ var Sinuous = function (canvas) {
 			if (this.enemies.length < ENEMIES_FACTOR * this.difficulty) {
 				this.createEnemies();
 			}
-			
-			if (chanceOfBoost > 0.997) {
+			console.log(chanceOfBoost);
+			if (chanceOfBoost > 0.9975) {
 				//console.log("created boost");
 				this.boosts.push(this.generateBoost());
 			}

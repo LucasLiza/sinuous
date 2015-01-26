@@ -15,7 +15,7 @@ var Boost = function (name, particle, action, duration) {
 		context.fill();
 		context.closePath();
 		context.fillStyle = "white";
-    context.font = this.radius * 2 + "px Tahoma";
+    context.font = this.radius * 1.5 + "px Tahoma";
     //syntax : .fillText("text", x, y)
 		//display the text aligned to the center of the particle
     context.fillText(name[0], this.position.x - this.radius / 2, this.position.y + this.radius / 2);
