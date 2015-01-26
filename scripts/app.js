@@ -200,6 +200,10 @@ var Sinuous = function (canvas) {
 		hudText = scoreText + timeText;
 		hud.innerHTML = hudText;
 	};
+	
+	this.gameOver = function () {
+		playing = false;
+	};
 
 
 	this.loop = function (mouse) {
@@ -230,7 +234,7 @@ var Sinuous = function (canvas) {
 			for (var i = 0; i < returnObjects.length; i = i + 1) {
 				//console.log(Vector.distance(returnObjects[i], this.player));
 				if (Vector.distance(returnObjects[i].position, this.player.position) <= this.player.radius + returnObjects[i].radius) {
-					console.log("game over");
+					this.gameOver();
 				}
 			}
 			//console.log(this.quadtree);
