@@ -4,7 +4,7 @@ var Player = function (size, color) {
 	"use strict";
 	this.size = size;
 	this.color = color;
-	this.boost = 0;
+	this.boosts = [];
 	this.trail = [];
 	this.position = new Vector(0, 0);
 };
