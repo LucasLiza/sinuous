@@ -1,3 +1,4 @@
+/*jslint plusplus: true*/
 var Boost = function (name, particle, action, duration) {
 	"use strict";
 	this.particle = particle;
@@ -24,6 +25,11 @@ var Boost = function (name, particle, action, duration) {
 		if (this.duration > 0) {
 			this.action();
 		}
+		--this.duration;
+	};
+	
+	this.active = function () {
+		return this.duration > 0;
 	};
 	
 	this.draw = function (context) {

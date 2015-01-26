@@ -3,25 +3,23 @@
 var Sinuous = function (canvas) {
 	"use strict";
 	var score = 0,
-			difficulty = 1.000,
-			defaultVelocity = new Vector(-1.3, 1),
-			playing = false,
-			ENEMIES_FACTOR = 30, 
-			SCREEN_HEIGHT = canvas.height, 
-			SCREEN_WIDTH = canvas.width;
+		difficulty = 1.000,
+		defaultVelocity = new Vector(-1.3, 1),
+		playing = false,
+		ENEMIES_FACTOR = 30,
+		SCREEN_HEIGHT = canvas.height,
+		SCREEN_WIDTH = canvas.width;
 	
 	this.canvas = canvas;
 	this.enemies = [];
 	this.boosts = [];
-	this.boost = new Boost("speed", new Particle(9, 'green', new Vector(10, 100), new Vector(0, 0), 1 + (Math.random() * 0.4)), function () { console.log(score); }, 50);
+	this.boost = new Boost("speed", new Particle(9, 'green', new Vector(10, 100), new Vector(0, 0), 1 + (Math.random() * 0.4)), function () { difficulty -= 0.0007; }, 100);
 	
 	this.context = this.canvas.getContext("2d");
 	this.player = new Player(5, 'green');
 
 	this.init = function () {
 		this.createEnemies();
-		this.boost.draw(this.context);
-		this.boost.doAction();
 	};
 
 	this.createEnemies = function () {
@@ -126,5 +124,11 @@ var Sinuous = function (canvas) {
 
 			this.clearObjects();
 		}
+		
+		if (this.boost.active()) {
+			this.boost.doAction();
+			console.log(difficulty);
+		}
+		
 	};
 };
