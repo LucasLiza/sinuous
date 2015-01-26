@@ -1,4 +1,5 @@
 "use strict";
+/*global Particle, Player, Vector*/
 var Sinuous = function (canvas) {
 	this.canvas = canvas;
 	this.enemies = [];
@@ -19,14 +20,16 @@ var Sinuous = function (canvas) {
 
 	this.createEnemies = function () {
 		//Every time create between 10 and 15 enemies
-		var numEnemies = 10 + (Math.random() * 15);
+		var enemy, numEnemies = 10 + (Math.random() * 15);
 		while (--numEnemies >= 0) {
-			var enemy = new Particle(3 + (Math.random() * 4), 'red', this.generatePosition(), this.generateStartVelocity(), 1 + (Math.random() * 0.4));
+			enemy = new Particle(3 + (Math.random() * 4), 'red', this.generatePosition(), this.generateStartVelocity(), 1 + (Math.random() * 0.4)
+													);
 			this.enemies.push(enemy);
 			//console.log('created enemy ->' + enemy);
 		}
 	};
-
+	
+	
 	this.generateStartVelocity = function () {
 		return new Vector(-4 + Math.random() * 8, -4 + Math.random() * 8);
 	};
@@ -45,33 +48,42 @@ var Sinuous = function (canvas) {
 	};
 
 	this.drawObjects = function () {
+		var enemy;
 		this.context.fillStyle = 'black';
 		this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
 		this.player.draw(this.context);
 		this.player.drawTrail(this.context);
-		for (var enemy in this.enemies) {
-			this.enemies[enemy].draw(this.context);
+		for (enemy in this.enemies) {
+			if (this.enemies.hasOwnProperty(enemy)) {
+				this.enemies[enemy].draw(this.context);
+			}
 		}
 
 	};
 
 	this.updateObjects = function (playerPosition, velocity) {
+		var enemy;
 		this.player.update(playerPosition, velocity);
 
-		for (var enemy in this.enemies) {
-			this.enemies[enemy].setVelocity(velocity);
-			this.enemies[enemy].update();
+		for (enemy in this.enemies) {
+			if (this.enemies.hasOwnProperty(enemy)) {
+				this.enemies[enemy].setVelocity(velocity);
+				this.enemies[enemy].update();
+			}
 		}
 	};
 
 	this.clearObjects = function () {
-		for (var enemy in this.enemies) {
-			var currentPosition = new Vector(this.enemies[enemy].position.x, this.enemies[enemy].position.y);
+		var enemy, currentPosition;
+		for (enemy in this.enemies) {
+			if (this.enemies.hasOwnProperty(enemy)) {
+				currentPosition = new Vector(this.enemies[enemy].position.x, this.enemies[enemy].position.y);
 			// remove from the enemies array, the dots that are out of bounds
-			if (currentPosition.x < 0 || currentPosition.x > this.SCREEN_WIDTH + 20 || currentPosition.y < -20 || currentPosition.y > this.SCREEN_WIDTH + 20) {
-				this.enemies.splice(enemy, 1);
+				if (currentPosition.x < 0 || currentPosition.x > this.SCREEN_WIDTH + 20 || currentPosition.y < -20 || currentPosition.y > this.SCREEN_WIDTH + 20) {
+					this.enemies.splice(enemy, 1);
 				//console.log("removed -> " + enemy);
+				}
 			}
 		}
 	};
