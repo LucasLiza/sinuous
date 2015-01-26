@@ -152,7 +152,7 @@ var Sinuous = function (canvas) {
 	this.updateScore = function () {
 		var lastPlayerPosition = this.player.trail[this.player.trail.length] || this.player.position;
 
-		score += 0.3 * difficulty;
+		score += 0.4 * difficulty;
 		score += Vector.distance(lastPlayerPosition, this.player.position);
 	};
 	
