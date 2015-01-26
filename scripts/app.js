@@ -1,5 +1,6 @@
 "use strict";
 /*global Particle, Player, Vector*/
+/*jslint plusplus: true*/
 var Sinuous = function (canvas) {
 	this.canvas = canvas;
 	this.enemies = [];
@@ -104,7 +105,7 @@ var Sinuous = function (canvas) {
 		if (this.playing) {
 			this.increaseDifficulty(0.0008);
 			this.updateScore(this.score);
-			console.log(this.score);
+			//console.log(this.score);
 			var diffVelocity = Vector.mult(this.defaulVelocity, this.difficulty);
 
 			if (this.enemies.length < this.MAX_ENEMIES * this.difficulty) {

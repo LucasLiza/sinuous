@@ -1,4 +1,5 @@
 "use strict";
+/*global Vector*/
 var Particle = function (radius, color, position, velocity, force) {
 	this.radius = radius;
 	this.color = color;
