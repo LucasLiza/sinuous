@@ -70,10 +70,10 @@ Quadtree.prototype.indexOf = function (rect) {
 	var nodeIndex = -1,
 		verticalCenter = (this.bounds.x + (this.bounds.width / 2)),
 		horizontalCenter = (this.bounds.y + (this.bounds.height / 2)),
-		isOnTop = rect.y < horizontalCenter,
+		isOnTop = rect.y <= horizontalCenter,
 		isOnBottom = rect.y > horizontalCenter;
 	
-	if (rect.x < verticalCenter) {
+	if (rect.x <= verticalCenter) {
 		if (isOnTop) {
 			nodeIndex = 0;
 		} else {
@@ -94,5 +94,51 @@ Quadtree.prototype.indexOf = function (rect) {
 
 Quadtree.prototype.insert = function (rect) {
 	"use strict";
+	var i = 0, nodeIndex;
 	
+	//if subnodes exists
+	if (typeof this.nodes[0] !== 'undefined') {
+		nodeIndex = this.indexOf(rect.position);
+		this.nodes[nodeIndex].insert(rect);
+		return;
+	}
+	
+	this.objects.push(rect);
+	
+	if (this.objects.length > this.maxObjects && this.level < this.maxLevels) {
+		//if there is no subnodes, split!
+		if (typeof this.nodes[0] === 'undefined') {
+			this.split();
+		}
+		
+		//add objects to their corresponding subnodes
+		while (i < this.objects.length) {
+			nodeIndex = this.indexOf(this.objects[i].position);
+			this.nodes[nodeIndex].insert(this.objects.splice(i, 1)[0]);
+		}
+	}
+};
+
+Quadtree.prototype.retrieve = function (rect) {
+	"use strict";
+	var nodeIndex = this.indexOf(rect.position),
+		returnObjects = this.objects,
+		i;
+			
+		//if we have subnodes ...
+	if (typeof this.nodes[0] !== 'undefined') {
+			
+			//if pRect fits into a subnode ..
+		if (nodeIndex !== -1) {
+			returnObjects = returnObjects.concat(this.nodes[nodeIndex].retrieve(rect));
+				
+			//if pRect does not fit into a subnode, check it against all subnodes
+		} else {
+			for (i = 0; i < this.nodes.length; i = i + 1) {
+				returnObjects = returnObjects.concat(this.nodes[i].retrieve(rect));
+			}
+		}
+	}
+	 
+	return returnObjects;
 };

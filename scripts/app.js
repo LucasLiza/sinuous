@@ -1,4 +1,4 @@
-/*global Particle, Player, Vector, Boost*/
+/*global Particle, Player, Vector, Boost, Quadtree*/
 /*jslint plusplus: true*/
 var Sinuous = function (canvas) {
 	"use strict";
@@ -20,7 +20,29 @@ var Sinuous = function (canvas) {
 	this.init = function () {
 		hud = document.getElementById("hud");
 		time = new Date();
+		this.quadtree = new Quadtree({
+			x: 0,
+			y: 0,
+			width: SCREEN_WIDTH,
+			height: SCREEN_HEIGHT
+		});
 		//this.createEnemies();
+	};
+	
+	this.drawQuadtree = function (node) {
+		var bounds = node.bounds, i;
+			
+				//no subnodes? draw the current node
+		if (node.nodes.length === 0) {
+			this.context.strokeStyle = 'rgba(255,0,0,0.2)';
+			this.context.strokeRect(bounds.x, bounds.y, bounds.width, bounds.height);
+					
+				//has subnodes? drawQuadtree them!
+		} else {
+			for (i = 0; i < node.nodes.length; i = i + 1) {
+				drawQuadtree(node.nodes[i]);
+			}
+		}
 	};
 
 	this.createEnemies = function () {
@@ -106,6 +128,7 @@ var Sinuous = function (canvas) {
 			if (this.enemies.hasOwnProperty(enemy)) {
 				this.enemies[enemy].setVelocity(velocity);
 				this.enemies[enemy].update();
+				this.quadtree.insert(this.enemies[enemy]);
 			}
 		}
 		
@@ -113,6 +136,7 @@ var Sinuous = function (canvas) {
 			if (this.boosts.hasOwnProperty(boost)) {
 				//console.log(this.boosts[boost]);
 				this.boosts[boost].update();
+				this.quadtree.insert(this.boosts[boost]);
 			}
 		}
 		
@@ -170,8 +194,9 @@ var Sinuous = function (canvas) {
 
 
 	this.loop = function (mouse) {
-		var diffVelocity, chanceOfBoost = Math.random();
+		var diffVelocity, chanceOfBoost = Math.random(), returnObjects, i;
 		if (playing) {
+			this.quadtree.clear();
 			this.increaseDifficulty(0.0008);
 			this.updateScore();
 			//console.log(this.score);
@@ -189,6 +214,13 @@ var Sinuous = function (canvas) {
 
 			this.updateObjects(mouse, diffVelocity);
 			this.drawObjects();
+			returnObjects = this.quadtree.retrieve(this.player);
+			
+			//flag retrieved objects
+			for (i = 0; i < returnObjects.length; i = i + 1) {
+				console.log(returnObjects[i].check);
+			}
+			this.drawQuadtree(this.quadtree);
 			//console.log(mouse);
 
 			this.updateHUD();
