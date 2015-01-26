@@ -1,10 +1,11 @@
-"use strict";
 /*global Particle, Player, Vector*/
 /*jslint plusplus: true*/
 var Sinuous = function (canvas) {
+	"use strict";
 	this.canvas = canvas;
 	this.enemies = [];
-	this.boots = [];
+	this.boosts = [];
+	this.boost = new Boost("speed", new Particle(9, 'red', new Vector(10, 100), new Vector(0, 0), 1 + (Math.random() * 0.4)), function () { console.log("yay"); });
 	this.score = 0;
 	this.context = this.canvas.getContext("2d");
 	this.MAX_ENEMIES = 30;
@@ -17,6 +18,7 @@ var Sinuous = function (canvas) {
 
 	this.init = function () {
 		this.createEnemies();
+		this.boost.draw(this.context);
 	};
 
 	this.createEnemies = function () {

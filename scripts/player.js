@@ -1,7 +1,7 @@
-"use strict";
 /*global Vector*/
 /*jslint plusplus: true*/
 var Player = function (size, color) {
+	"use strict";
 	this.size = size;
 	this.color = color;
 	this.boost = 0;
@@ -10,16 +10,17 @@ var Player = function (size, color) {
 };
 
 Player.prototype.draw = function (context) {
+	"use strict";
 	//Draw player
 	context.beginPath();
 	context.arc(this.position.x, this.position.y, this.size, 0, 2 * Math.PI, false);
 	context.fillStyle = this.color;
 	context.fill();
 	context.closePath();
-
 };
 
 Player.prototype.drawTrail = function (context) {
+	"use strict";
 	var i;
 	context.beginPath();
 	context.strokeStyle = this.color;
@@ -31,11 +32,10 @@ Player.prototype.drawTrail = function (context) {
 
 	context.stroke();
 	context.closePath();
-
-
 };
 
 Player.prototype.update = function (position, gameVelocity) {
+	"use strict";
 	var i;
 	this.position.x += (position.x - this.position.x) * 0.13;
 	this.position.y += (position.y - this.position.y) * 0.13;
