@@ -1,24 +1,27 @@
-/*global Particle, Player, Vector*/
+/*global Particle, Player, Vector, Boost*/
 /*jslint plusplus: true*/
 var Sinuous = function (canvas) {
 	"use strict";
+	var score = 0,
+			difficulty = 1.000,
+			defaultVelocity = new Vector(-1.3, 1),
+			playing = false,
+			ENEMIES_FACTOR = 30, 
+			SCREEN_HEIGHT = canvas.height, 
+			SCREEN_WIDTH = canvas.width;
+	
 	this.canvas = canvas;
 	this.enemies = [];
 	this.boosts = [];
-	this.boost = new Boost("speed", new Particle(9, 'red', new Vector(10, 100), new Vector(0, 0), 1 + (Math.random() * 0.4)), function () { console.log("yay"); });
-	this.score = 0;
+	this.boost = new Boost("speed", new Particle(9, 'green', new Vector(10, 100), new Vector(0, 0), 1 + (Math.random() * 0.4)), function () { console.log(score); }, 50);
+	
 	this.context = this.canvas.getContext("2d");
-	this.MAX_ENEMIES = 30;
-	this.playing = true;
-	this.SCREEN_HEIGHT = canvas.height;
-	this.SCREEN_WIDTH = canvas.width;
-	this.difficulty = 1.000;
-	this.defaulVelocity = new Vector(-1.3, 1);
 	this.player = new Player(5, 'green');
 
 	this.init = function () {
 		this.createEnemies();
 		this.boost.draw(this.context);
+		this.boost.doAction();
 	};
 
 	this.createEnemies = function () {
@@ -39,6 +42,7 @@ var Sinuous = function (canvas) {
 
 	this.generatePosition = function () {
 		var position = new Vector(0, 0);
+		
 		if (Math.random() > 0.5) {
 			position.x = Math.random() * this.SCREEN_WIDTH;
 			position.y = -20;
@@ -57,6 +61,7 @@ var Sinuous = function (canvas) {
 
 		this.player.draw(this.context);
 		this.player.drawTrail(this.context);
+		
 		for (enemy in this.enemies) {
 			if (this.enemies.hasOwnProperty(enemy)) {
 				this.enemies[enemy].draw(this.context);
@@ -92,25 +97,25 @@ var Sinuous = function (canvas) {
 	};
 
 	this.increaseDifficulty = function (amount) {
-		this.difficulty += amount;
+		difficulty += amount;
 	};
 
 	this.updateScore = function () {
 		var lastPlayerPosition = this.player.trail[this.player.trail.length] || this.player.position;
 
-		this.score += 0.3 * this.difficulty;
-		this.score += Vector.distance(lastPlayerPosition, this.player.position);
+		score += 0.3 * difficulty;
+		score += Vector.distance(lastPlayerPosition, this.player.position);
 	};
 
 
 	this.loop = function (mouse) {
-		if (this.playing) {
+		if (playing) {
 			this.increaseDifficulty(0.0008);
-			this.updateScore(this.score);
+			this.updateScore(score);
 			//console.log(this.score);
-			var diffVelocity = Vector.mult(this.defaulVelocity, this.difficulty);
+			var diffVelocity = Vector.mult(defaultVelocity, difficulty);
 
-			if (this.enemies.length < this.MAX_ENEMIES * this.difficulty) {
+			if (this.enemies.length < ENEMIES_FACTOR * this.difficulty) {
 				this.createEnemies();
 			}
 

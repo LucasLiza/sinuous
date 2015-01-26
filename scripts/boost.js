@@ -1,6 +1,7 @@
-var Boost = function (name, particle, action) {
+var Boost = function (name, particle, action, duration) {
 	"use strict";
 	this.particle = particle;
+	this.duration = duration;
 	this.name = name;
 	this.action = action;
 	this.id = name[0];
@@ -20,7 +21,9 @@ var Boost = function (name, particle, action) {
 	};
 	
 	this.doAction = function () {
-		this.action();
+		if (this.duration > 0) {
+			this.action();
+		}
 	};
 	
 	this.draw = function (context) {
