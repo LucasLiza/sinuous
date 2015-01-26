@@ -9,7 +9,7 @@ var Boost = function (name, particle, action, duration) {
 	//Overriding draw
 	this.particle.draw = function (context) {
 		context.beginPath();
-		console.log(this.position);
+		//console.log(this.position);
 		context.arc(this.position.x, this.position.y, this.radius, 0, 2 * Math.PI, false);
 		context.fillStyle = this.color;
 		context.fill();
@@ -34,5 +34,9 @@ var Boost = function (name, particle, action, duration) {
 	
 	this.draw = function (context) {
 		this.particle.draw(context);
+	};
+	
+	this.update = function () {
+		this.particle.update();
 	};
 };
