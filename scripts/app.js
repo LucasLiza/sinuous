@@ -160,8 +160,9 @@ var Sinuous = function (canvas) {
 		
 		var hudText,
 			currentTime = new Date(),
+			timePassed = currentTime.getTime() - time.getTime(),
 			scoreText = "Score: <span>" + Math.floor(score) + "</span>",
-			timeText = " Time: <span>" + ((currentTime.getTime() - time.getTime())/1000) + "</span>";
+			timeText = " Time: <span>" + (timePassed / 1000).toFixed(2) + "s</span>";
 		
 		hudText = scoreText + timeText;
 		hud.innerHTML = hudText;
