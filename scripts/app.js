@@ -62,11 +62,11 @@ var Sinuous = function (canvas) {
 		var diffParticle, diffBoost, gravityBoost, gravityParticle, clearBoost, clearParticle, availableBoosts, position = this.generatePosition();
 
 		function rand(min, max) {
-				var offset = min,
-					range = (max - min) + 1;
+			var offset = min,
+				range = (max - min) + 1;
 
-				return Math.floor(Math.random() * range) + offset;
-			}
+			return Math.floor(Math.random() * range) + offset;
+		}
 			//console.log("position -> "+position.x +", "+ position.y);
 		diffParticle = new Particle(10, 'green', position, defaultVelocity, 1 + (Math.random() * 0.4));
 		gravityParticle = new Particle(10, 'blue', position, defaultVelocity, 1 + (Math.random() * 0.4));
@@ -162,7 +162,7 @@ var Sinuous = function (canvas) {
 				// remove from the enemies array, the dots that are out of bounds
 				if (this.isOutOfScreen(currentPosition)) {
 					this.enemies.splice(enemy, 1);
-					console.log("removed -> " + enemy);
+					//console.log("removed -> " + enemy);
 				}
 			}
 		}
@@ -211,9 +211,9 @@ var Sinuous = function (canvas) {
 			this.updateScore();
 			//console.log(this.score);
 			diffVelocity = Vector.mult(defaultVelocity, difficulty);
-			console.log(this.enemies.length);
+			//console.log(this.enemies.length);
 			if (this.enemies.length < ENEMIES_FACTOR * difficulty) {
-				console.log("creating");
+				//console.log("creating");
 				this.createEnemies();
 			}
 
@@ -225,7 +225,14 @@ var Sinuous = function (canvas) {
 
 			this.updateObjects(mouse, diffVelocity);
 			this.drawObjects();
-			//returnObjects = this.quadtree.retrieve(this.player);
+			returnObjects = this.quadtree.retrieve(this.player);
+			
+			for (var i = 0; i < returnObjects.length; i = i + 1) {
+				//console.log(Vector.distance(returnObjects[i], this.player));
+				if (Vector.distance(returnObjects[i].position, this.player.position) <= this.player.radius + returnObjects[i].radius) {
+					console.log("game over");
+				}
+			}
 			//console.log(this.quadtree);
 			this.drawQuadtree(this.quadtree);
 			//console.log(mouse);

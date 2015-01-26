@@ -27,14 +27,13 @@ Quadtree.prototype.split = function () {
 		height: subnodeHeight
 	}, this.maxObjects, this.maxLevels, nextLevel);
 
+	//TOP-LEFT
 	this.nodes[1] = new Quadtree({
 		x: x,
 		y: y,
 		width: subnodeWidth,
 		height: subnodeHeight
 	}, this.maxObjects, this.maxLevels, nextLevel);
-
-	//TOP-RIGHT
 
 	//BOT-LEFT
 	this.nodes[2] = new Quadtree({
@@ -127,6 +126,7 @@ Quadtree.prototype.insert = function (rect) {
 	}
 };
 
+//Retrieve objects that could collide with rect
 Quadtree.prototype.retrieve = function (rect) {
 	"use strict";
 	var nodeIndex = this.indexOf(rect),

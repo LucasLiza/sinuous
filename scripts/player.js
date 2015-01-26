@@ -2,7 +2,7 @@
 /*jslint plusplus: true*/
 var Player = function (size, color) {
 	"use strict";
-	this.size = size;
+	this.radius = size;
 	this.color = color;
 	this.boosts = [];
 	this.trail = [];
@@ -13,7 +13,7 @@ Player.prototype.draw = function (context) {
 	"use strict";
 	//Draw player
 	context.beginPath();
-	context.arc(this.position.x, this.position.y, this.size, 0, 2 * Math.PI, false);
+	context.arc(this.position.x, this.position.y, this.radius, 0, 2 * Math.PI, false);
 	context.fillStyle = this.color;
 	context.fill();
 	context.closePath();
