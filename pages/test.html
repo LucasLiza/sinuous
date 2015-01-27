@@ -8,6 +8,7 @@
 	<script src="../scripts/particle.js"></script>
 	<script src="../scripts/boost.js"></script>
 	<script src="../scripts/player.js"></script>
+	<script src="../scripts/utils/explosion.js"></script>
 	<script src="../scripts/app.js"></script>
 	<link rel="stylesheet" href="../styles/style.css">
 	<title>Sinuous</title>
@@ -20,35 +21,35 @@
 	</canvas>
 
 	<script>
-		var canvas = document.getElementById('canvasTest'); 
-				canvas.width = document.body.clientWidth; //document.width is obsolete
-				canvas.height = document.body.clientWidth; //document.height is obsolete
-		var game = new Sinuous(canvas), 
-				mouse = new Vector(100,100);
-		
-		if(window.addEventListener) {
-  		// Handle window's `load` event.
-  		window.addEventListener('load', function () {
-    		// Wire up the `focus` and `blur` event handlers.
+		var canvas = document.getElementById('canvasTest');
+		canvas.width = document.body.clientWidth; //document.width is obsolete
+		canvas.height = document.body.clientWidth; //document.height is obsolete
+		var game = new Sinuous(canvas),
+			mouse = new Vector(100, 100);
+
+		if (window.addEventListener) {
+			// Handle window's `load` event.
+			window.addEventListener('load', function () {
+				// Wire up the `focus` and `blur` event handlers.
 				document.addEventListener('mousemove', documentMouseMoveHandler, false);
 				window.addEventListener('focus', this.game.resume);
-    		window.addEventListener('blur', this.game.pause);
-  		});
-		}		
+				window.addEventListener('blur', this.game.pause);
+			});
+		}
+
 		function documentMouseMoveHandler(event) {
 			mouse = new Vector(event.clientX, event.clientY);
 		}
-		
+
 		function loopTheGame() {
 			game.loop(mouse);
 			requestAnimationFrame(loopTheGame);
 		}
-		
-		
+
+
 
 		game.init();
 		loopTheGame();
-		
 	</script>
 
 

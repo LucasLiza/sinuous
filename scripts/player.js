@@ -50,9 +50,10 @@ Player.prototype.draw = function (context) {
 Player.prototype.drawTrail = function (context) {
 	"use strict";
 	var i;
+	context.fillStyle = 'rgba(0,0,0,0.05)';
 	context.beginPath();
-	context.strokeStyle = this.color;
-	context.lineWidth = 2;
+	context.strokeStyle = 'rgba(20,100,50,0.70)';
+	context.lineWidth = 3;
 
 	for (i = 0; i < this.trail.length; i++) {
 		context.lineTo(this.trail[i].x, this.trail[i].y);

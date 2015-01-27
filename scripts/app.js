@@ -13,6 +13,7 @@ var Sinuous = function (canvas) {
 		ENEMIES_FACTOR = 0,
 		enemies = [],
 		boosts = [],
+		explosions = [],
 		context,
 		quadtree,
 		player = new Player(5, 'green'),
@@ -100,12 +101,15 @@ var Sinuous = function (canvas) {
 		},
 
 		clearEnemies = function () {
+			for (var i = 0; i < enemies.length; i++) {
+				explosions.push(new Explosion(1000, enemies[i].clone()));
+			}
 			score += ENEMY_SCORE * enemies.length;
 			enemies.splice(0, enemies.length);
 		},
 
 		drawObjects = function () {
-			var enemy, boost;
+			var enemy, boost, explosion;
 			context.fillStyle = 'black';
 			canvas.width = canvas.width;
 
@@ -125,10 +129,16 @@ var Sinuous = function (canvas) {
 				}
 			}
 
+			for (explosion in explosions) {
+				if (explosions.hasOwnProperty(explosion)) {
+					explosions[explosion].draw(context);
+				}
+			}
+
 		},
 
 		updateObjects = function (playerPosition, velocity) {
-			var enemy, boost;
+			var enemy, boost, explosion;
 			if (typeof playerPosition !== 'undefined') {
 				player.update(playerPosition, velocity);
 			}
@@ -150,6 +160,12 @@ var Sinuous = function (canvas) {
 				}
 			}
 
+			for (explosion in explosions) {
+				if (explosions.hasOwnProperty(explosion)) {
+					explosions[explosion].update();
+				}
+			}
+
 		},
 
 		isOutOfScreen = function (position) {
@@ -157,7 +173,7 @@ var Sinuous = function (canvas) {
 		},
 
 		clearObjects = function () {
-			var boost, enemy, currentPosition;
+			var boost, enemy, explosion, currentPosition;
 			for (enemy in enemies) {
 				if (enemies.hasOwnProperty(enemy)) {
 					currentPosition = new Vector(enemies[enemy].position.x, enemies[enemy].position.y);
@@ -175,6 +191,14 @@ var Sinuous = function (canvas) {
 					if (isOutOfScreen(currentPosition)) {
 						boosts.splice(boost, 1);
 						//console.log("removed boost -> " + boost);
+					}
+				}
+			}
+
+			for (explosion in explosions) {
+				if (explosions.hasOwnProperty(explosion)) {
+					if (explosions[explosion].isOver()) {
+						explosions.splice(explosion, 1);
 					}
 				}
 			}

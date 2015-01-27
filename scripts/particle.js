@@ -6,7 +6,6 @@ var Particle = function (radius, color, position, velocity, force) {
 	this.force = force;
 	this.position = position;
 	this.velocity = velocity;
-	this.destroyed = false;
 };
 
 Particle.prototype.draw = function (context) {
@@ -26,4 +25,8 @@ Particle.prototype.setVelocity = function (newv) {
 Particle.prototype.update = function () {
 	"use strict";
 	this.position.add(this.velocity);
+};
+
+Particle.prototype.clone = function () {
+	return new Particle(this.radius, this.color, this.position, this.velocity, this.force);
 };
