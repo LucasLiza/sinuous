@@ -54,6 +54,11 @@ var Vector = function (x, y) {
 	this.clone = function () {
 		return new Vector(this.x, this.y);
 	};
+
+	// Gets the angle accounting for the quadrant we're in
+	this.getAngle = function () {
+		return Math.atan2(this.y, this.x);
+	};
 };
 
 // class functions, so we can do
@@ -81,4 +86,9 @@ Vector.distance = function (v1, v2) {
 	dx = v1.x - v2.x;
 	dy = v1.y - v2.y;
 	return Math.sqrt(dx * dx + dy * dy);
+};
+
+// Allows us to get a new vector from angle and magnitude
+Vector.fromAngle = function (angle, magnitude) {
+	return new Vector(magnitude * Math.cos(angle), magnitude * Math.sin(angle));
 };

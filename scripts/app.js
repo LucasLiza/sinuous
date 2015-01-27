@@ -102,14 +102,14 @@ var Sinuous = function (canvas) {
 
 		clearEnemies = function () {
 			for (var i = 0; i < enemies.length; i++) {
-				explosions.push(new Explosion(1000, enemies[i].clone()));
+				explosions.push(new Explosion(enemies[i].color, enemies[i].position, enemies[i].velocity, 3).emit(enemies[i].radius * 2));
 			}
 			score += ENEMY_SCORE * enemies.length;
 			enemies.splice(0, enemies.length);
 		},
 
 		drawObjects = function () {
-			var enemy, boost, explosion;
+			var enemy, boost, explosion, particle;
 			context.fillStyle = 'black';
 			canvas.width = canvas.width;
 
@@ -131,14 +131,16 @@ var Sinuous = function (canvas) {
 
 			for (explosion in explosions) {
 				if (explosions.hasOwnProperty(explosion)) {
-					explosions[explosion].draw(context);
+					for (particle in explosions[explosion]) {
+						explosions[explosion][particle].draw(context);
+					}
 				}
 			}
 
 		},
 
 		updateObjects = function (playerPosition, velocity) {
-			var enemy, boost, explosion;
+			var enemy, boost, explosion, particle;
 			if (typeof playerPosition !== 'undefined') {
 				player.update(playerPosition, velocity);
 			}
@@ -162,7 +164,9 @@ var Sinuous = function (canvas) {
 
 			for (explosion in explosions) {
 				if (explosions.hasOwnProperty(explosion)) {
-					explosions[explosion].update();
+					for (particle in explosions[explosion]) {
+						explosions[explosion][particle].update();
+					}
 				}
 			}
 
@@ -173,7 +177,7 @@ var Sinuous = function (canvas) {
 		},
 
 		clearObjects = function () {
-			var boost, enemy, explosion, currentPosition;
+			var boost, enemy, explosion, particle, currentPosition;
 			for (enemy in enemies) {
 				if (enemies.hasOwnProperty(enemy)) {
 					currentPosition = new Vector(enemies[enemy].position.x, enemies[enemy].position.y);
@@ -195,13 +199,16 @@ var Sinuous = function (canvas) {
 				}
 			}
 
-			for (explosion in explosions) {
-				if (explosions.hasOwnProperty(explosion)) {
-					if (explosions[explosion].isOver()) {
-						explosions.splice(explosion, 1);
-					}
-				}
-			}
+//			for (explosion in explosions) {
+//				if (explosions.hasOwnProperty(explosion)) {
+//					currentPosition = new Vector(explosions[explosion].position.x, explosions[explosion].position.y);
+//					if (isOutOfScreen(currentPosition)) {
+//						for (particle in explosions[explosion]) {
+//							explosions[explosion][particle].splice(explosion, 1);
+//						}
+//					}
+//				}
+//			}
 		},
 
 		increaseDifficulty = function (amount) {
