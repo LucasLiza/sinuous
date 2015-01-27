@@ -5,6 +5,8 @@ var Boost = function (name, particle, action, duration) {
 	this.duration = duration;
 	this.name = name;
 	this.action = action;
+	this.radius = this.particle.radius;
+	this.position = this.particle.position;
 	this.id = name[0];
 	//Overriding draw
 	this.particle.draw = function (context) {
@@ -15,28 +17,29 @@ var Boost = function (name, particle, action, duration) {
 		context.fill();
 		context.closePath();
 		context.fillStyle = "white";
-    context.font = this.radius * 1.5 + "px Tahoma";
-    //syntax : .fillText("text", x, y)
+		context.font = this.radius * 1.5 + "px Tahoma";
+		//syntax : .fillText("text", x, y)
 		//display the text aligned to the center of the particle
-    context.fillText(name[0], this.position.x - this.radius / 2, this.position.y + this.radius / 2);
+		context.fillText(name[0], this.position.x - this.radius / 2, this.position.y + this.radius / 2);
 	};
-	
+
 	this.doAction = function () {
 		if (this.duration > 0) {
 			this.action();
 		}
 		--this.duration;
 	};
-	
+
 	this.active = function () {
 		return this.duration > 0;
 	};
-	
+
 	this.draw = function (context) {
 		this.particle.draw(context);
 	};
-	
+
 	this.update = function () {
 		this.particle.update();
+		this.position = this.particle.position;
 	};
 };

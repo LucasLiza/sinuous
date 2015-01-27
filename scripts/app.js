@@ -2,6 +2,7 @@
 /*jslint plusplus: true*/
 var Sinuous = function (canvas) {
 	"use strict";
+	this.canvas = canvas;
 	var hud,
 		time,
 		score = 0,
@@ -9,7 +10,7 @@ var Sinuous = function (canvas) {
 		defaultVelocity = new Vector(-1.3, 1),
 		playing = true,
 		paused = false,
-		ENEMIES_FACTOR = 10,
+		ENEMIES_FACTOR = 0,
 		enemies = [],
 		boosts = [],
 		context,
@@ -32,29 +33,48 @@ var Sinuous = function (canvas) {
 			if (typeof node !== 'undefined') {
 				bounds = node.bounds;
 				if (node.nodes.length === 0) {
-					this.context.strokeStyle = "#FFF";
-					this.context.strokeRect(bounds.x, bounds.y, bounds.height, bounds.width);
+					context.strokeStyle = "#FFF";
+					context.strokeRect(bounds.x, bounds.y, bounds.height, bounds.width);
 					//has subnodes? drawQuadtree them!
 				} else {
 					for (i = 0; i < node.nodes.length; i = i + 1) {
-						this.drawQuadtree(node.nodes[i]);
+						drawQuadtree(node.nodes[i]);
 					}
 				}
 			}
+		},
+
+
+		generateStartVelocity = function () {
+			return new Vector(-4 + Math.random() * 8, -4 + Math.random() * 8);
+		},
+
+		generatePosition = function () {
+			var position = new Vector(0, 0);
+
+			if (Math.random() > 0.5) {
+				position.x = Math.random() * SCREEN_WIDTH;
+				position.y = -20;
+			} else {
+				position.x = SCREEN_WIDTH + 20;
+				position.y = (-SCREEN_HEIGHT * 0.2) + (Math.random() * SCREEN_HEIGHT * 1.2);
+			}
+
+			return position;
 		},
 
 		createEnemies = function () {
 			//Every time create between 10 and 15 enemies
 			var enemy, numEnemies = 10 + (Math.random() * 15);
 			while (--numEnemies >= 0) {
-				enemy = new Particle(3 + (Math.random() * 4), 'red', this.generatePosition(), this.generateStartVelocity(), 1 + (Math.random() * 0.4));
-				this.enemies.push(enemy);
+				enemy = new Particle(3 + (Math.random() * 4), 'red', generatePosition(), generateStartVelocity(), 1 + (Math.random() * 0.4));
+				enemies.push(enemy);
 				//console.log('created enemy ->' + enemy);
 			}
 		},
 
 		generateBoost = function () {
-			var diffParticle, diffBoost, gravityBoost, gravityParticle, clearBoost, clearParticle, availableBoosts, position = this.generatePosition();
+			var diffParticle, diffBoost, gravityBoost, gravityParticle, clearBoost, clearParticle, availableBoosts, position = generatePosition();
 
 			diffParticle = new Particle(10, 'green', position, defaultVelocity, 1 + (Math.random() * 0.4));
 			gravityParticle = new Particle(10, 'blue', position, defaultVelocity, 1 + (Math.random() * 0.4));
@@ -78,41 +98,25 @@ var Sinuous = function (canvas) {
 			return availableBoosts[rand(0, availableBoosts.length - 1)];
 		},
 
-		generateStartVelocity = function () {
-			return new Vector(-4 + Math.random() * 8, -4 + Math.random() * 8);
-		},
-
-		generatePosition = function () {
-			var position = new Vector(0, 0);
-
-			if (Math.random() > 0.5) {
-				position.x = Math.random() * SCREEN_WIDTH;
-				position.y = -20;
-			} else {
-				position.x = SCREEN_WIDTH + 20;
-				position.y = (-SCREEN_HEIGHT * 0.2) + (Math.random() * SCREEN_HEIGHT * 1.2);
-			}
-
-			return position;
-		},
 
 		drawObjects = function () {
 			var enemy, boost;
-			this.context.fillStyle = 'black';
-			this.canvas.width = this.canvas.width;
+			context.fillStyle = 'black';
+			canvas.width = canvas.width;
 
-			this.player.draw(this.context);
-			this.player.drawTrail(this.context);
+			player.draw(context);
+			player.drawTrail(context);
 
-			for (enemy in this.enemies) {
-				if (this.enemies.hasOwnProperty(enemy)) {
-					this.enemies[enemy].draw(this.context);
+			for (enemy in enemies) {
+				if (enemies.hasOwnProperty(enemy)) {
+					enemies[enemy].draw(context);
+					//console.log(enemies[enemy] instanceof Particle);
 				}
 			}
 
-			for (boost in this.boosts) {
-				if (this.boosts.hasOwnProperty(boost)) {
-					this.boosts[boost].draw(this.context);
+			for (boost in boosts) {
+				if (boosts.hasOwnProperty(boost)) {
+					boosts[boost].draw(context);
 				}
 			}
 
@@ -121,48 +125,49 @@ var Sinuous = function (canvas) {
 		updateObjects = function (playerPosition, velocity) {
 			var enemy, boost;
 			if (typeof playerPosition !== 'undefined') {
-				this.player.update(playerPosition, velocity);
+				player.update(playerPosition, velocity);
 			}
-			for (enemy in this.enemies) {
-				if (this.enemies.hasOwnProperty(enemy)) {
-					this.enemies[enemy].setVelocity(velocity);
-					this.enemies[enemy].update();
-					this.quadtree.insert(this.enemies[enemy]);
+			for (enemy in enemies) {
+				if (enemies.hasOwnProperty(enemy)) {
+					enemies[enemy].setVelocity(velocity);
+					enemies[enemy].update();
+					quadtree.insert(enemies[enemy]);
 				}
 			}
 
-			for (boost in this.boosts) {
-				if (this.boosts.hasOwnProperty(boost)) {
-					//console.log(this.boosts[boost]);
-					this.boosts[boost].update();
-					//this.quadtree.insert(this.boosts[boost]);
+			for (boost in boosts) {
+				if (boosts.hasOwnProperty(boost)) {
+					//console.log(boosts[boost]);
+					boosts[boost].update();
+					//console.log("inserted");
+					quadtree.insert(boosts[boost]);
 				}
 			}
 
 		},
 
 		isOutOfScreen = function (position) {
-			return position.x < 0 || position.x > this.SCREEN_WIDTH + 20 || position.y < -20 || position.y > this.SCREEN_WIDTH + 20;
+			return position.x < 0 || position.x > SCREEN_WIDTH + 20 || position.y < -20 || position.y > SCREEN_WIDTH + 20;
 		},
 
 		clearObjects = function () {
 			var boost, enemy, currentPosition;
-			for (enemy in this.enemies) {
-				if (this.enemies.hasOwnProperty(enemy)) {
-					currentPosition = new Vector(this.enemies[enemy].position.x, this.enemies[enemy].position.y);
+			for (enemy in enemies) {
+				if (enemies.hasOwnProperty(enemy)) {
+					currentPosition = new Vector(enemies[enemy].position.x, enemies[enemy].position.y);
 					// remove from the enemies array, the dots that are out of bounds
-					if (this.isOutOfScreen(currentPosition)) {
-						this.enemies.splice(enemy, 1);
+					if (isOutOfScreen(currentPosition)) {
+						enemies.splice(enemy, 1);
 						//console.log("removed -> " + enemy);
 					}
 				}
 			}
 
-			for (boost in this.boosts) {
-				if (this.boosts.hasOwnProperty(boost)) {
-					currentPosition = new Vector(this.boosts[boost].particle.position.x, this.boosts[boost].particle.position.y);
-					if (this.isOutOfScreen(currentPosition)) {
-						this.boosts.splice(boost, 1);
+			for (boost in boosts) {
+				if (boosts.hasOwnProperty(boost)) {
+					currentPosition = new Vector(boosts[boost].particle.position.x, boosts[boost].particle.position.y);
+					if (isOutOfScreen(currentPosition)) {
+						boosts.splice(boost, 1);
 						//console.log("removed boost -> " + boost);
 					}
 				}
@@ -174,10 +179,10 @@ var Sinuous = function (canvas) {
 		},
 
 		updateScore = function () {
-			var lastPlayerPosition = this.player.trail[this.player.trail.length] || this.player.position;
+			var lastPlayerPosition = player.trail[player.trail.length] || player.position;
 
 			score += 0.4 * difficulty;
-			score += Vector.distance(lastPlayerPosition, this.player.position);
+			score += Vector.distance(lastPlayerPosition, player.position);
 		},
 
 		updateHUD = function () {
@@ -195,21 +200,32 @@ var Sinuous = function (canvas) {
 			playing = false;
 		},
 
+		removeBoost = function (b) {
+			var index = boosts.indexOf(b);
+			if (index > -1) {
+				boosts.splice(index, 1);
+			}
+		},
+
 		checkCollision = function (objs, target) {
 			var i;
 			for (i = 0; i < objs.length; i = i + 1) {
 				if (Vector.distance(objs[i].position, target.position) <= target.radius + objs[i].radius) {
-					this.gameOver();
+					if (objs[i] instanceof Particle) { //is an enemy
+						gameOver();
+					} else if (objs[i] instanceof Boost) { //boost it up
+						//player.acquire(objs[i]);
+						removeBoost(objs[i]);
+						console.log("Acquired Boost! It's a " + objs[i].name);
+					}
 				}
 			}
 		};
 
-	this.canvas = canvas;
-
 	this.init = function () {
 		hud = document.getElementById("hud");
-		SCREEN_HEIGHT = canvas.height;
-		SCREEN_WIDTH = canvas.width;
+		SCREEN_HEIGHT = this.canvas.height;
+		SCREEN_WIDTH = this.canvas.width;
 		context = this.canvas.getContext("2d");
 		time = new Date();
 		quadtree = new Quadtree({
@@ -251,7 +267,7 @@ var Sinuous = function (canvas) {
 			returnObjects = quadtree.retrieve(player);
 			checkCollision(returnObjects, player);
 
-			//this.drawQuadtree(this.quadtree);
+			drawQuadtree(quadtree);
 			//console.log(mouse);
 			updateHUD();
 			quadtree.clear();
