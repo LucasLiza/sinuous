@@ -3,6 +3,9 @@
 var Sinuous = function (canvas) {
 	"use strict";
 	this.canvas = canvas;
+	this.pause = function () {
+		paused = true;
+	};
 	var hud,
 		time,
 		score = 0,
@@ -81,16 +84,16 @@ var Sinuous = function (canvas) {
 			clearParticle = new Particle(10, 'purple', position, defaultVelocity, 1 + (Math.random() * 0.5));
 
 			diffBoost = new Boost("diff", diffParticle, function () {
-				difficulty -= 0.0007;
-			}, 100);
+				console.log(generatePosition());
+			}, this, 100);
 
 			gravityBoost = new Boost("gravity", gravityParticle, function () {
-				difficulty -= 0.0007;
-			}, 100);
+				console.log("pause");
+			}, this, 100);
 
 			clearBoost = new Boost("clear", clearParticle, function () {
-				difficulty -= 0.0007;
-			}, 100);
+				console.log("pause");
+			}, this, 100);
 
 			availableBoosts = [diffBoost, gravityBoost, clearBoost];
 
@@ -127,6 +130,7 @@ var Sinuous = function (canvas) {
 			if (typeof playerPosition !== 'undefined') {
 				player.update(playerPosition, velocity);
 			}
+
 			for (enemy in enemies) {
 				if (enemies.hasOwnProperty(enemy)) {
 					enemies[enemy].setVelocity(velocity);
@@ -214,7 +218,7 @@ var Sinuous = function (canvas) {
 					if (objs[i] instanceof Particle) { //is an enemy
 						gameOver();
 					} else if (objs[i] instanceof Boost) { //boost it up
-						//player.acquire(objs[i]);
+						player.acquire(objs[i]);
 						removeBoost(objs[i]);
 						console.log("Acquired Boost! It's a " + objs[i].name);
 					}
@@ -237,10 +241,6 @@ var Sinuous = function (canvas) {
 		createEnemies();
 	};
 
-	this.pause = function () {
-		paused = true;
-	};
-
 	this.resume = function () {
 		paused = false;
 	};
@@ -251,6 +251,7 @@ var Sinuous = function (canvas) {
 
 		if (playing && !paused) {
 			increaseDifficulty(0.0008);
+			//console.log(difficulty);
 			updateScore();
 			//console.log(this.score);
 			diffVelocity = Vector.mult(defaultVelocity, difficulty);
@@ -259,7 +260,7 @@ var Sinuous = function (canvas) {
 				createEnemies();
 			}
 
-			if (chanceOfBoost > 0.9975) {
+			if (chanceOfBoost > 0.8975) {
 				boosts.push(generateBoost());
 			}
 

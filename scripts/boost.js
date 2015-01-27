@@ -1,10 +1,10 @@
 /*jslint plusplus: true*/
-var Boost = function (name, particle, action, duration) {
+var Boost = function (name, particle, act, context, duration) {
 	"use strict";
 	this.particle = particle;
 	this.duration = duration;
 	this.name = name;
-	this.action = action;
+	var action = act;
 	this.radius = this.particle.radius;
 	this.position = this.particle.position;
 	this.id = name[0];
@@ -25,7 +25,7 @@ var Boost = function (name, particle, action, duration) {
 
 	this.doAction = function () {
 		if (this.duration > 0) {
-			this.action();
+			act();
 		}
 		--this.duration;
 	};
