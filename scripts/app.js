@@ -110,7 +110,7 @@ var Sinuous = function (canvas) {
 	this.drawObjects = function () {
 		var enemy, boost;
 		this.context.fillStyle = 'black';
-		this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+		this.canvas.width = this.canvas.width;
 
 		this.player.draw(this.context);
 		this.player.drawTrail(this.context);
@@ -219,7 +219,6 @@ var Sinuous = function (canvas) {
 		var diffVelocity, chanceOfBoost = Math.random(),
 			returnObjects, i;
 		if (playing) {
-			
 			this.increaseDifficulty(0.0008);
 			this.updateScore();
 			//console.log(this.score);
@@ -234,7 +233,6 @@ var Sinuous = function (canvas) {
 			}
 			
 			this.updateObjects(mouse, diffVelocity);
-			
 			returnObjects = this.quadtree.retrieve(this.player);
 			this.checkCollision(returnObjects, this.player);
 			
