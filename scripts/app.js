@@ -131,8 +131,9 @@ var Sinuous = function (canvas) {
 
 	this.updateObjects = function (playerPosition, velocity) {
 		var enemy, boost;
-		this.player.update(playerPosition, velocity);
-
+		if (typeof playerPosition !== 'undefined') {
+			this.player.update(playerPosition, velocity);
+		}
 		for (enemy in this.enemies) {
 			if (this.enemies.hasOwnProperty(enemy)) {
 				this.enemies[enemy].setVelocity(velocity);
@@ -204,53 +205,47 @@ var Sinuous = function (canvas) {
 	this.gameOver = function () {
 		playing = false;
 	};
-
+	
+	this.checkCollision = function (objs, target) {
+		var i;
+		for (i = 0; i < objs.length; i = i + 1) {
+			if (Vector.distance(objs[i].position, target.position) <= target.radius + objs[i].radius) {
+				this.gameOver();
+			}
+		}
+	};
 
 	this.loop = function (mouse) {
 		var diffVelocity, chanceOfBoost = Math.random(),
 			returnObjects, i;
 		if (playing) {
-
+			
 			this.increaseDifficulty(0.0008);
 			this.updateScore();
 			//console.log(this.score);
 			diffVelocity = Vector.mult(defaultVelocity, difficulty);
 			//console.log(this.enemies.length);
 			if (this.enemies.length < ENEMIES_FACTOR * difficulty) {
-				//console.log("creating");
 				this.createEnemies();
 			}
 
-			//console.log(chanceOfBoost);
 			if (chanceOfBoost > 0.9975) {
-				//console.log("created boost");
 				this.boosts.push(this.generateBoost());
 			}
-
-			this.updateObjects(mouse, diffVelocity);
-			this.drawObjects();
-			returnObjects = this.quadtree.retrieve(this.player);
 			
-			for (var i = 0; i < returnObjects.length; i = i + 1) {
-				//console.log(Vector.distance(returnObjects[i], this.player));
-				if (Vector.distance(returnObjects[i].position, this.player.position) <= this.player.radius + returnObjects[i].radius) {
-					this.gameOver();
-				}
-			}
-			//console.log(this.quadtree);
-			this.drawQuadtree(this.quadtree);
+			this.updateObjects(mouse, diffVelocity);
+			
+			returnObjects = this.quadtree.retrieve(this.player);
+			this.checkCollision(returnObjects, this.player);
+			
+			//this.drawQuadtree(this.quadtree);
 			//console.log(mouse);
-
 			this.updateHUD();
-
 			this.quadtree.clear();
 			this.clearObjects();
+			this.drawObjects();
 		}
-
-		//if (this.boost.active()) {
-		//	this.boost.doAction();
-		//console.log(difficulty);
-		//}
-
+		//console.log(2);
+		//window.requestAnimationFrame(this.loop(mouse));
 	};
 };

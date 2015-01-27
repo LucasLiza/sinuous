@@ -15,6 +15,7 @@
 
 <body>
 	<div id="hud" class="ui"></div>
+	<div id="menu" class="ui"></div>
 	<canvas id="canvasTest">
 	</canvas>
 
@@ -24,7 +25,7 @@
 		canvas.height = document.body.clientWidth; //document.height is obsolete
 
 		document.addEventListener('mousemove', documentMouseMoveHandler, false);
-		var mouse;
+		var mouse = new Vector(100,100);
 
 		function documentMouseMoveHandler(event) {
 			mouse = new Vector(event.clientX, event.clientY);
@@ -32,10 +33,12 @@
 
 		var game = new Sinuous(canvas);
 		game.init();
-
-		setInterval(function () {
+		
+		function loopTheGame() {
 			game.loop(mouse);
-		}, 1000 / 60);
+			requestAnimationFrame(loopTheGame);
+		}
+		loopTheGame();
 	</script>
 
 
