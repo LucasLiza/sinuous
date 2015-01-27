@@ -20,26 +20,35 @@
 	</canvas>
 
 	<script>
-		var canvas = document.getElementById('canvasTest');
-		canvas.width = document.body.clientWidth; //document.width is obsolete
-		canvas.height = document.body.clientWidth; //document.height is obsolete
-
-		document.addEventListener('mousemove', documentMouseMoveHandler, false);
-		var mouse = new Vector(100,100);
-
+		var canvas = document.getElementById('canvasTest'); 
+				canvas.width = document.body.clientWidth; //document.width is obsolete
+				canvas.height = document.body.clientWidth; //document.height is obsolete
+		var game = new Sinuous(canvas), 
+				mouse = new Vector(100,100);
+		
+		if(window.addEventListener) {
+  		// Handle window's `load` event.
+  		window.addEventListener('load', function () {
+    		// Wire up the `focus` and `blur` event handlers.
+				document.addEventListener('mousemove', documentMouseMoveHandler, false);
+				window.addEventListener('focus', this.game.resume);
+    		window.addEventListener('blur', this.game.pause);
+  		});
+		}		
 		function documentMouseMoveHandler(event) {
 			mouse = new Vector(event.clientX, event.clientY);
 		}
-
-		var game = new Sinuous(canvas);
-		game.init();
 		
 		function loopTheGame() {
 			game.loop(mouse);
 			requestAnimationFrame(loopTheGame);
 		}
 		
+		
+
+		game.init();
 		loopTheGame();
+		
 	</script>
 
 

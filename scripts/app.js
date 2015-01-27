@@ -8,9 +8,15 @@ var Sinuous = function (canvas) {
 		difficulty = 1.000,
 		defaultVelocity = new Vector(-1.3, 1),
 		playing = true,
+		paused = false,
 		ENEMIES_FACTOR = 10,
 		SCREEN_HEIGHT = canvas.height,
-		SCREEN_WIDTH = canvas.width;
+		SCREEN_WIDTH = canvas.width,
+		rand = function (min, max) {
+			var offset = min,	range = (max - min) + 1;
+
+			return Math.floor(Math.random() * range) + offset;
+		};
 	this.canvas = canvas;
 	this.enemies = [];
 	this.boosts = [];
@@ -61,12 +67,7 @@ var Sinuous = function (canvas) {
 	this.generateBoost = function () {
 		var diffParticle, diffBoost, gravityBoost, gravityParticle, clearBoost, clearParticle, availableBoosts, position = this.generatePosition();
 
-		function rand(min, max) {
-			var offset = min,
-				range = (max - min) + 1;
-
-			return Math.floor(Math.random() * range) + offset;
-		}
+		
 			//console.log("position -> "+position.x +", "+ position.y);
 		diffParticle = new Particle(10, 'green', position, defaultVelocity, 1 + (Math.random() * 0.4));
 		gravityParticle = new Particle(10, 'blue', position, defaultVelocity, 1 + (Math.random() * 0.4));
@@ -201,11 +202,21 @@ var Sinuous = function (canvas) {
 		hudText = scoreText + timeText;
 		hud.innerHTML = hudText;
 	};
-	
+
 	this.gameOver = function () {
 		playing = false;
 	};
-	
+
+	this.pause = function () {
+		console.log("pause");
+		paused = true;
+	};
+
+	this.resume = function () {
+		console.log("resumed");
+		paused = false;
+	};
+
 	this.checkCollision = function (objs, target) {
 		var i;
 		for (i = 0; i < objs.length; i = i + 1) {
@@ -218,7 +229,7 @@ var Sinuous = function (canvas) {
 	this.loop = function (mouse) {
 		var diffVelocity, chanceOfBoost = Math.random(),
 			returnObjects, i;
-		if (playing) {
+		if (playing && !paused) {
 			this.increaseDifficulty(0.0008);
 			this.updateScore();
 			//console.log(this.score);
@@ -231,11 +242,11 @@ var Sinuous = function (canvas) {
 			if (chanceOfBoost > 0.9975) {
 				this.boosts.push(this.generateBoost());
 			}
-			
+
 			this.updateObjects(mouse, diffVelocity);
 			returnObjects = this.quadtree.retrieve(this.player);
 			this.checkCollision(returnObjects, this.player);
-			
+
 			//this.drawQuadtree(this.quadtree);
 			//console.log(mouse);
 			this.updateHUD();
