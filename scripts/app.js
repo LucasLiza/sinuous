@@ -10,7 +10,7 @@ var Sinuous = function (canvas) {
 		defaultVelocity = new Vector(-1.3, 1),
 		playing = true,
 		paused = false,
-		ENEMIES_FACTOR = 0,
+		ENEMIES_FACTOR = 20,
 		enemies = [],
 		boosts = [],
 		explosions = [],
@@ -199,16 +199,21 @@ var Sinuous = function (canvas) {
 				}
 			}
 
-//			for (explosion in explosions) {
-//				if (explosions.hasOwnProperty(explosion)) {
-//					currentPosition = new Vector(explosions[explosion].position.x, explosions[explosion].position.y);
-//					if (isOutOfScreen(currentPosition)) {
-//						for (particle in explosions[explosion]) {
-//							explosions[explosion][particle].splice(explosion, 1);
-//						}
-//					}
-//				}
-//			}
+			for (explosion in explosions) {
+				if (explosions.hasOwnProperty(explosion)) {
+
+					for (particle in explosions[explosion]) {
+						currentPosition = new Vector(explosions[explosion][particle].position.x, explosions[explosion][particle].position.y);
+						if (isOutOfScreen(currentPosition)) {
+							explosions[explosion].splice(particle, 1);
+						}
+
+						if (explosions[explosion].length == 0) {
+							explosions[explosion].splice(explosion, 1);
+						}
+					}
+				}
+			}
 		},
 
 		increaseDifficulty = function (amount) {
@@ -297,7 +302,7 @@ var Sinuous = function (canvas) {
 				createEnemies();
 			}
 
-			if (chanceOfBoost > 0.5975) {
+			if (chanceOfBoost > 0.9975) {
 				boosts.push(generateBoost());
 			}
 
