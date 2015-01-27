@@ -6,6 +6,7 @@ var Particle = function (radius, color, position, velocity, force) {
 	this.force = force;
 	this.position = position;
 	this.velocity = velocity;
+	this.destroyed = false;
 };
 
 Particle.prototype.draw = function (context) {

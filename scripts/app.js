@@ -3,9 +3,6 @@
 var Sinuous = function (canvas) {
 	"use strict";
 	this.canvas = canvas;
-	this.pause = function () {
-		paused = true;
-	};
 	var hud,
 		time,
 		score = 0,
@@ -21,6 +18,7 @@ var Sinuous = function (canvas) {
 		player = new Player(5, 'green'),
 		SCREEN_HEIGHT,
 		SCREEN_WIDTH,
+		ENEMY_SCORE = 100,
 
 		rand = function (min, max) {
 			var offset = min,
@@ -92,8 +90,8 @@ var Sinuous = function (canvas) {
 			}, this, 100);
 
 			clearBoost = new Boost("clear", clearParticle, function () {
-				console.log("pause");
-			}, this, 100);
+				clearEnemies();
+			}, this, 1);
 
 			availableBoosts = [diffBoost, gravityBoost, clearBoost];
 
@@ -101,6 +99,10 @@ var Sinuous = function (canvas) {
 			return availableBoosts[rand(0, availableBoosts.length - 1)];
 		},
 
+		clearEnemies = function () {
+			score += ENEMY_SCORE * enemies.length;
+			enemies.splice(0, enemies.length);
+		},
 
 		drawObjects = function () {
 			var enemy, boost;
@@ -245,6 +247,10 @@ var Sinuous = function (canvas) {
 		paused = false;
 	};
 
+	this.pause = function () {
+		paused = true;
+	};
+
 	this.loop = function (mouse) {
 		var diffVelocity, chanceOfBoost = Math.random(),
 			returnObjects, i;
@@ -260,7 +266,7 @@ var Sinuous = function (canvas) {
 				createEnemies();
 			}
 
-			if (chanceOfBoost > 0.8975) {
+			if (chanceOfBoost > 0.5975) {
 				boosts.push(generateBoost());
 			}
 
