@@ -22,7 +22,7 @@ Explosion.prototype.emit = function (amount) {
 		var velocity = Vector.fromAngle(angle, magnitude);
 
 		// return our new Particle!
-		pts.push(new Particle(1, this.color, position, velocity, 1));
+		pts.push(new Particle(1, this.color, position, velocity, new Vector(1, 1)));
 	}
 	return pts;
 };

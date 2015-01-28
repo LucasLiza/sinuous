@@ -1,9 +1,9 @@
 /*global Vector*/
-var Particle = function (radius, color, position, velocity, force) {
+var Particle = function (radius, color, position, velocity, accel) {
 	"use strict";
 	this.radius = radius;
 	this.color = color;
-	this.force = force;
+	this.accel = accel;
 	this.position = position;
 	this.velocity = velocity;
 };
@@ -17,16 +17,15 @@ Particle.prototype.draw = function (context) {
 	context.closePath();
 };
 
-Particle.prototype.setVelocity = function (newv) {
-	"use strict";
-	this.velocity = Vector.mult(newv, this.force);
+Particle.prototype.applyVelocity = function (newv) {
+	this.velocity = newv;
 };
 
 Particle.prototype.update = function () {
 	"use strict";
-	this.position.add(this.velocity);
+	this.position.add(Vector.add(this.velocity, this.accel));
 };
 
 Particle.prototype.clone = function () {
-	return new Particle(this.radius, this.color, this.position, this.velocity, this.force);
+	return new Particle(this.radius, this.color, this.position, this.velocity, this.accel);
 };

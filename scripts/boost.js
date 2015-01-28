@@ -1,5 +1,5 @@
 /*jslint plusplus: true*/
-var Boost = function (name, particle, act, context, duration) {
+var Boost = function (name, particle, act, duration) {
 	"use strict";
 	var action = act;
 	this.particle = particle;
@@ -17,7 +17,7 @@ var Boost = function (name, particle, act, context, duration) {
 		context.fill();
 		context.closePath();
 		context.fillStyle = "white";
-		context.font = this.radius * 1.5 + "px Tahoma";
+		context.font = this.radius * 1.5 + "px Helvetica";
 		//syntax : .fillText("text", x, y)
 		//display the text aligned to the center of the particle
 		context.fillText(name[0], this.position.x - this.radius / 2, this.position.y + this.radius / 2);
