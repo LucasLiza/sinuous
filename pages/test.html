@@ -17,10 +17,9 @@
 <body>
 
 	<div id="hud" class="ui"></div>
-	<div class="outer">
+	<div id="menu" class="outer">
 		SINUOUS
-		<div id="menu">
-
+		<div class="menu">
 			<div class="content	">
 				How to play:
 				<div class="center">
@@ -33,7 +32,7 @@
 					</ol>
 				</div>
 			</div>
-			<button class="myButton">Play</button>
+			<button class="myButton" onclick="startGame()">Play</button>
 		</div>
 	</div>
 	<canvas id="canvasTest">
@@ -44,7 +43,13 @@
 		canvas.width = document.body.clientWidth; //document.width is obsolete
 		canvas.height = document.body.clientWidth; //document.height is obsolete
 		var game = new Sinuous(canvas);
-		game.init();
+
+
+		function startGame() {
+			var menu = document.getElementById("menu");
+			menu.style.visibility = 'hidden'
+			game.init();
+		}
 	</script>
 
 

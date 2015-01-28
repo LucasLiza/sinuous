@@ -28,15 +28,15 @@ var Sinuous = function (canvas) {
 		score = 0,
 		difficulty = 1.000,
 		defaultVelocity = new Vector(-1.3, 1),
-		playing = true,
-		paused = false,
+		playing,
+		animating,
 		ENEMIES_FACTOR,
 		enemies = [],
 		boosts = [],
 		explosions = [],
 		context,
 		quadtree,
-		player = new Player(5, 'green'),
+		player,
 		SCREEN_HEIGHT,
 		SCREEN_WIDTH,
 		ENEMY_SCORE = 100,
@@ -65,7 +65,7 @@ var Sinuous = function (canvas) {
 		generatePosition = function () {
 			var position = new Vector(0, 0);
 
-			if (Math.random() > 0.5) {//
+			if (Math.random() > 0.5) { //
 				position.x = Math.round(Math.random() * SCREEN_WIDTH);
 				position.y = -20;
 			} else {
@@ -121,7 +121,7 @@ var Sinuous = function (canvas) {
 			clearBoost = new Boost("clear", clearParticle, function () {
 				var i;
 				for (i = 0; i < enemies.length; i++) {
-					explosions.push(new Explosion(enemies[i].color, enemies[i].position, enemies[i].velocity, 3).emit(enemies[i].radius * 1.5));
+					explosions.push(new Explosion(enemies[i].color, enemies[i].position, enemies[i].velocity, 3).emit(enemies[i].radius));
 				}
 				score += ENEMY_SCORE * enemies.length;
 				enemies.splice(0, enemies.length);
@@ -170,7 +170,7 @@ var Sinuous = function (canvas) {
 		updateObjects = function (playerPosition, velocity, step) {
 			var enemy, boost, explosion, particle;
 			//velocity.add(step);
-			if (typeof playerPosition !== 'undefined') {
+			if (typeof playerPosition !== 'undefined' && !animating) {
 				player.update(playerPosition, velocity);
 			}
 
@@ -205,7 +205,7 @@ var Sinuous = function (canvas) {
 		},
 
 		isOutOfScreen = function (position) {
-			return position.x < 0 || position.x > SCREEN_WIDTH + 20 || position.y < -20 || position.y > SCREEN_WIDTH + 20;
+			return position.x < 0 || position.x > SCREEN_WIDTH + 20 || position.y < -20 || position.y > SCREEN_HEIGHT + 20;
 		},
 
 		clearObjects = function () {
@@ -236,14 +236,14 @@ var Sinuous = function (canvas) {
 
 					for (particle in explosions[explosion]) {
 						if (explosions[explosion].hasOwnProperty(particle)) {
-							currentPosition = explosions[explosion][particle].clone();
+							currentPosition = explosions[explosion][particle].position;
+							//console.log(currentPosition);
 							if (isOutOfScreen(currentPosition)) {
 								explosions[explosion].splice(particle, 1);
 							}
 
 							if (explosions[explosion].length === 0) {
-								explosions[explosion].splice(explosion, 1);
-								justclear = false;
+								explosions.splice(explosion, 1);
 							}
 						}
 					}
@@ -274,7 +274,8 @@ var Sinuous = function (canvas) {
 		},
 
 		gameOver = function () {
-			//playing = false;
+			explosions.push(new Explosion(player.color, player.position, generateStartVelocity(), 3).emit(player.radius));
+			playing = false;
 		},
 
 		removeBoost = function (b) {
@@ -301,11 +302,10 @@ var Sinuous = function (canvas) {
 		loop = function () {
 			var diffVelocity, chanceOfBoost = Math.random(),
 				i;
-
-			now = timestamp();
-			dt = dt + Math.min(1, (now - last) / 1000);
-			if (playing && !paused) {
-
+			if (playing || explosions.length != 0) {
+				//console.log(explosions.length);
+				now = timestamp();
+				dt = dt + Math.min(1, (now - last) / 1000);
 				while (dt > step) {
 					dt = dt - step;
 					increaseDifficulty(0.0008);
@@ -316,7 +316,7 @@ var Sinuous = function (canvas) {
 					//diffVelocity.limit(2);
 					//diffVelocity.add(step);
 					//console.log(step);
-					if (enemies.length < Math.min(200, ENEMIES_FACTOR * difficulty)) {
+					if (enemies.length < Math.min(150, ENEMIES_FACTOR * difficulty)) {
 						createEnemies();
 					}
 
@@ -337,12 +337,13 @@ var Sinuous = function (canvas) {
 
 				drawObjects(dt);
 				last = now;
-
 			}
+
 			window.requestAnimationFrame(loop);
 		};
 
 	this.init = function () {
+		player = new Player(5, 'green');
 		hud = document.getElementById("hud");
 		SCREEN_HEIGHT = this.canvas.height;
 		SCREEN_WIDTH = this.canvas.width;
@@ -355,15 +356,7 @@ var Sinuous = function (canvas) {
 			width: this.canvas.height,
 			height: this.canvas.width
 		});
-
+		playing = true;
 		window.requestAnimationFrame(loop);
-	};
-
-	this.resume = function () {
-		paused = false;
-	};
-
-	this.pause = function () {
-		paused = false;
 	};
 };
