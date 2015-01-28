@@ -30,7 +30,7 @@ var Sinuous = function (canvas) {
 		defaultVelocity = new Vector(-1.3, 1),
 		playing = true,
 		paused = false,
-		ENEMIES_FACTOR = 20,
+		ENEMIES_FACTOR,
 		enemies = [],
 		boosts = [],
 		explosions = [],
@@ -58,14 +58,14 @@ var Sinuous = function (canvas) {
 
 		generateStartVelocity = function () {
 			var vel = Vector.mult(defaultVelocity, 6);
-			console.log(vel);
+			//console.log(vel);
 			return vel;
 		},
 
 		generatePosition = function () {
 			var position = new Vector(0, 0);
 
-			if (Math.random() > 0.5) {
+			if (Math.random() > 0.5) {//
 				position.x = Math.round(Math.random() * SCREEN_WIDTH);
 				position.y = -20;
 			} else {
@@ -81,9 +81,9 @@ var Sinuous = function (canvas) {
 			var enemy, numEnemies = 8 + (Math.random() * 13),
 				accel, size;
 			while (--numEnemies >= 0) {
-				accel = rand(0.4, 1);
+				accel = rand(1, 5);
 				size = rand(3, 5);
-				enemy = new Particle(size, 'red', generatePosition(), generateStartVelocity(), new Vector(accel, accel));
+				enemy = new Particle(size, 'red', generatePosition(), generateStartVelocity(), new Vector(-accel, accel));
 				enemies.push(enemy);
 				//console.log('created enemy ->' + enemy);
 			}
@@ -313,9 +313,10 @@ var Sinuous = function (canvas) {
 					updateScore();
 					//console.log(this.score);
 					diffVelocity = Vector.mult(defaultVelocity, difficulty);
+					//diffVelocity.limit(2);
 					//diffVelocity.add(step);
 					//console.log(step);
-					if (enemies.length < ENEMIES_FACTOR * difficulty && !justclear) {
+					if (enemies.length < Math.min(200, ENEMIES_FACTOR * difficulty)) {
 						createEnemies();
 					}
 
@@ -345,6 +346,7 @@ var Sinuous = function (canvas) {
 		hud = document.getElementById("hud");
 		SCREEN_HEIGHT = this.canvas.height;
 		SCREEN_WIDTH = this.canvas.width;
+		ENEMIES_FACTOR = (SCREEN_WIDTH / SCREEN_HEIGHT) * 30;
 		context = this.canvas.getContext("2d");
 		time = new Date();
 		quadtree = new Quadtree({

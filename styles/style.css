@@ -1,3 +1,4 @@
+@import url(http://fonts.googleapis.com/css?family=Exo+2);
 canvas {
 	background-color: black;
 }
@@ -17,7 +18,107 @@ body {
 	color: white;
 }
 
-#hud span{
+#hud span {
 	font-weight: 500;
 	font-family: 'Helvetica';
+}
+/* The element to be centered, can
+   also be of any width and height */
+
+#menu {
+	width: 100%;
+	height: 65%;
+	margin: auto;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	-webkit-transform: translate(-50%, -50%);
+	-ms-transform: translate(-50%, -50%);
+	transform: translate(-50%, -50%);
+	color: white;
+	background-color: rgb(15, 12, 12);
+	border-radius: 2px;
+	font-size: 16px;
+}
+
+.myButton {
+	-moz-box-shadow: inset 0px 1px 11px 0px #f5978e;
+	-webkit-box-shadow: inset 0px 1px 11px 0px #f5978e;
+	box-shadow: inset 0px 1px 11px 0px #f5978e;
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #f24537), color-stop(1, #c62d1f));
+	background: -moz-linear-gradient(top, #f24537 5%, #c62d1f 100%);
+	background: -webkit-linear-gradient(top, #f24537 5%, #c62d1f 100%);
+	background: -o-linear-gradient(top, #f24537 5%, #c62d1f 100%);
+	background: -ms-linear-gradient(top, #f24537 5%, #c62d1f 100%);
+	background: linear-gradient(to bottom, #f24537 5%, #c62d1f 100%);
+	filter: progid: DXImageTransform.Microsoft.gradient(startColorstr='#f24537', endColorstr='#c62d1f', GradientType=0);
+	background-color: #f24537;
+	-moz-border-radius: 14px;
+	-webkit-border-radius: 14px;
+	border-radius: 14px;
+	border: 1px solid #d02718;
+	display: inline-block;
+	cursor: pointer;
+	color: #ffffff;
+	font-family: arial;
+	font-size: 15px;
+	font-weight: bold;
+	padding: 9px 34px;
+	text-decoration: none;
+	text-shadow: 0px 2px 0px #810e05;
+	outline: none;
+	margin: 0 auto;
+	display: block;
+}
+
+.myButton:hover {
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #c62d1f), color-stop(1, #f24537));
+	background: -moz-linear-gradient(top, #c62d1f 5%, #f24537 100%);
+	background: -webkit-linear-gradient(top, #c62d1f 5%, #f24537 100%);
+	background: -o-linear-gradient(top, #c62d1f 5%, #f24537 100%);
+	background: -ms-linear-gradient(top, #c62d1f 5%, #f24537 100%);
+	background: linear-gradient(to bottom, #c62d1f 5%, #f24537 100%);
+	filter: progid: DXImageTransform.Microsoft.gradient(startColorstr='#c62d1f', endColorstr='#f24537', GradientType=0);
+	background-color: #c62d1f;
+}
+
+.myButton:active {
+	position: relative;
+	top: 1px;
+}
+
+.outer {
+	font-family: 'Exo 2', sans-serif;
+	font-size: 40px;
+	width: 400px;
+	height: 300px;
+	text-align: center;
+	margin: auto;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	-webkit-transform: translate(-50%, -50%);
+	-ms-transform: translate(-50%, -50%);
+	transform: translate(-50%, -50%);
+	color: white;
+	border-radius: 2px;
+}
+
+.content {
+	margin: 10px;
+	text-align: center;
+}
+
+.content ol {
+	width: 100%;
+	display: inline-block;
+}
+
+.text_left {
+	text-align: left;
+}
+
+.centered {
+	vertical-align: middle;
+	text-align: center
 }
