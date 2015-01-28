@@ -1,5 +1,23 @@
 /*global Particle, Player, Vector, Boost, Quadtree*/
 /*jslint plusplus: true*/
+var mouse = new Vector(100, 100);
+function documentMouseMoveHandler(event) {
+	"use strict";
+	mouse = new Vector(event.clientX, event.clientY);
+}
+
+if (window.addEventListener) {
+	"use strict";
+	// Handle window's `load` event.
+	window.addEventListener('load', function () {
+		// Wire up the `focus` and `blur` event handlers.		
+		window.addEventListener('focus', this.game.resume);
+		window.addEventListener('blur', this.game.pause);
+	});
+}
+
+document.addEventListener('mousemove', documentMouseMoveHandler, false);
+
 var Sinuous = function (canvas) {
 	"use strict";
 	this.canvas = canvas;
@@ -20,32 +38,20 @@ var Sinuous = function (canvas) {
 		SCREEN_HEIGHT,
 		SCREEN_WIDTH,
 		ENEMY_SCORE = 100,
-
+		justclear = false,
+		now,
+		dt = 0,
+		timestamp = function () {
+			return window.performance && window.performance.now ? window.performance.now() : new Date().getTime();
+		},
+    last = timestamp(),
+		step = 1/60,
 		rand = function (min, max) {
 			var offset = min,
 				range = (max - min) + 1;
 
 			return Math.floor(Math.random() * range) + offset;
 		},
-
-		drawQuadtree = function (node) {
-			var bounds, i;
-			//console.log(node);
-			//no subnodes? draw the current node
-			if (typeof node !== 'undefined') {
-				bounds = node.bounds;
-				if (node.nodes.length === 0) {
-					context.strokeStyle = "#FFF";
-					context.strokeRect(bounds.x, bounds.y, bounds.height, bounds.width);
-					//has subnodes? drawQuadtree them!
-				} else {
-					for (i = 0; i < node.nodes.length; i = i + 1) {
-						drawQuadtree(node.nodes[i]);
-					}
-				}
-			}
-		},
-
 
 		generateStartVelocity = function () {
 			return new Vector(-4 + Math.random() * 8, -4 + Math.random() * 8);
@@ -55,11 +61,11 @@ var Sinuous = function (canvas) {
 			var position = new Vector(0, 0);
 
 			if (Math.random() > 0.5) {
-				position.x = Math.random() * SCREEN_WIDTH;
+				position.x = Math.round(Math.random() * SCREEN_WIDTH);
 				position.y = -20;
 			} else {
 				position.x = SCREEN_WIDTH + 20;
-				position.y = (-SCREEN_HEIGHT * 0.2) + (Math.random() * SCREEN_HEIGHT * 1.2);
+				position.y = Math.floor((-SCREEN_HEIGHT * 0.2) + (Math.random() * SCREEN_HEIGHT * 1.2));
 			}
 
 			return position;
@@ -67,9 +73,9 @@ var Sinuous = function (canvas) {
 
 		createEnemies = function () {
 			//Every time create between 10 and 15 enemies
-			var enemy, numEnemies = 10 + (Math.random() * 15);
+			var enemy, numEnemies = 8 + (Math.random() * 13);
 			while (--numEnemies >= 0) {
-				enemy = new Particle(3 + (Math.random() * 4), 'red', generatePosition(), generateStartVelocity(), 1 + (Math.random() * 0.4));
+				enemy = new Particle(Math.round(3 + (Math.random() * 5)), 'red', generatePosition(), generateStartVelocity(), 1 + (Math.random() * 0.4));
 				enemies.push(enemy);
 				//console.log('created enemy ->' + enemy);
 			}
@@ -87,7 +93,7 @@ var Sinuous = function (canvas) {
 			}, this, 100);
 
 			gravityBoost = new Boost("gravity", gravityParticle, function () {
-				console.log("pause");
+				
 			}, this, 100);
 
 			clearBoost = new Boost("clear", clearParticle, function () {
@@ -102,10 +108,11 @@ var Sinuous = function (canvas) {
 
 		clearEnemies = function () {
 			for (var i = 0; i < enemies.length; i++) {
-				explosions.push(new Explosion(enemies[i].color, enemies[i].position, enemies[i].velocity, 3).emit(enemies[i].radius * 2));
+				explosions.push(new Explosion(enemies[i].color, enemies[i].position, enemies[i].velocity, 3).emit(enemies[i].radius * 1.5));
 			}
 			score += ENEMY_SCORE * enemies.length;
 			enemies.splice(0, enemies.length);
+			justclear = true;
 		},
 
 		drawObjects = function () {
@@ -139,8 +146,9 @@ var Sinuous = function (canvas) {
 
 		},
 
-		updateObjects = function (playerPosition, velocity) {
+		updateObjects = function (playerPosition, velocity, step) {
 			var enemy, boost, explosion, particle;
+			//velocity.add(step);
 			if (typeof playerPosition !== 'undefined') {
 				player.update(playerPosition, velocity);
 			}
@@ -210,6 +218,7 @@ var Sinuous = function (canvas) {
 
 						if (explosions[explosion].length == 0) {
 							explosions[explosion].splice(explosion, 1);
+							justclear = false;
 						}
 					}
 				}
@@ -263,7 +272,7 @@ var Sinuous = function (canvas) {
 				}
 			}
 		};
-
+	
 	this.init = function () {
 		hud = document.getElementById("hud");
 		SCREEN_HEIGHT = this.canvas.height;
@@ -276,7 +285,8 @@ var Sinuous = function (canvas) {
 			width: this.canvas.height,
 			height: this.canvas.width
 		});
-		createEnemies();
+		
+		requestAnimationFrame(loop);
 	};
 
 	this.resume = function () {
@@ -287,37 +297,46 @@ var Sinuous = function (canvas) {
 		paused = true;
 	};
 
-	this.loop = function (mouse) {
+	var loop = function () {
 		var diffVelocity, chanceOfBoost = Math.random(),
 			returnObjects, i;
-
+		requestAnimationFrame(loop);
+		now = timestamp();
+  	dt = dt + Math.min(1, (now - last) / 1000);
+		
 		if (playing && !paused) {
-			increaseDifficulty(0.0008);
-			//console.log(difficulty);
-			updateScore();
-			//console.log(this.score);
-			diffVelocity = Vector.mult(defaultVelocity, difficulty);
-			//console.log(this.enemies.length);
-			if (enemies.length < ENEMIES_FACTOR * difficulty) {
-				createEnemies();
-			}
+			while(dt > step) {
+    		dt = dt - step;
+				increaseDifficulty(0.0008);
+				//console.log(difficulty);
+				updateScore();
+				//console.log(this.score);
+				diffVelocity = Vector.mult(defaultVelocity, difficulty);
+				//diffVelocity.add(step);
+				//console.log(step);
+				if (enemies.length < ENEMIES_FACTOR * difficulty && !justclear) {
+					createEnemies();
+				}
 
-			if (chanceOfBoost > 0.9975) {
-				boosts.push(generateBoost());
-			}
+				if (chanceOfBoost > 0.9975) {
+					boosts.push(generateBoost());
+				}
 
-			updateObjects(mouse, diffVelocity);
+				updateObjects(mouse, diffVelocity, step);
+			
 			returnObjects = quadtree.retrieve(player);
 			checkCollision(returnObjects, player);
-
-			drawQuadtree(quadtree);
+				quadtree.clear();
+			clearObjects();
+			}
+			//drawQuadtree(quadtree);
 			//console.log(mouse);
 			updateHUD();
-			quadtree.clear();
-			clearObjects();
-			drawObjects();
+			
+			drawObjects(dt);
+			last = now;
 		}
-		//console.log(2);
-		//window.requestAnimationFrame(this.loop(mouse));
+
+		
 	};
 };

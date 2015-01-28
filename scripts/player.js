@@ -18,14 +18,14 @@ Player.prototype.draw = function (context) {
 		case "diff":
 			context.beginPath();
 			context.arc(this.position.x, this.position.y, this.radius * 8, 0, 2 * Math.PI, false);
-			context.fillStyle = "white";
+			context.fillStyle = 'rgba(250,250,250,0.5)';
 			context.fill();
 			context.closePath();
 			break;
 		case "gravity":
 			context.beginPath();
 			context.arc(this.position.x, this.position.y, this.radius * 8, 0, 2 * Math.PI, false);
-			context.fillStyle = "blue";
+			context.fillStyle = 'rgba(0,0,255,0.3)';
 			context.fill();
 			context.closePath();
 			break;
