@@ -18,7 +18,8 @@ Particle.prototype.draw = function (context) {
 };
 
 Particle.prototype.applyVelocity = function (newv) {
-	this.velocity = newv;
+	"use strict";
+	this.velocity = newv.clone();
 };
 
 Particle.prototype.update = function () {
@@ -27,5 +28,6 @@ Particle.prototype.update = function () {
 };
 
 Particle.prototype.clone = function () {
+	"use strict";
 	return new Particle(this.radius, this.color, this.position, this.velocity, this.accel);
 };

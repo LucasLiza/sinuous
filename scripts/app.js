@@ -57,7 +57,9 @@ var Sinuous = function (canvas) {
 		},
 
 		generateStartVelocity = function () {
-			return Vector.mult(defaultVelocity, rand(1, 2));
+			var vel = Vector.mult(defaultVelocity, 6);
+			console.log(vel);
+			return vel;
 		},
 
 		generatePosition = function () {
@@ -76,10 +78,11 @@ var Sinuous = function (canvas) {
 
 		createEnemies = function () {
 			//Every time create between 10 and 15 enemies
-			var enemy, numEnemies = 8 + (Math.random() * 13);
+			var enemy, numEnemies = 8 + (Math.random() * 13),
+				accel, size;
 			while (--numEnemies >= 0) {
-				var accel = rand(0.4, 1),
-					size = rand(3, 5);
+				accel = rand(0.4, 1);
+				size = rand(3, 5);
 				enemy = new Particle(size, 'red', generatePosition(), generateStartVelocity(), new Vector(accel, accel));
 				enemies.push(enemy);
 				//console.log('created enemy ->' + enemy);
@@ -87,8 +90,9 @@ var Sinuous = function (canvas) {
 		},
 
 		generateBoost = function () {
-			var diffParticle, diffBoost, gravityBoost, gravityParticle, clearBoost, clearParticle, availableBoosts, position = generatePosition();
-			var accel = rand(0.4, 1);
+			var diffParticle, diffBoost, gravityBoost, gravityParticle, clearBoost, clearParticle, availableBoosts, position = generatePosition(),
+				accel;
+			accel = rand(0.4, 1);
 			diffParticle = new Particle(10, 'green', position, defaultVelocity, new Vector(accel, accel));
 			accel = rand(0.4, 1);
 			gravityParticle = new Particle(10, 'blue', position, defaultVelocity, new Vector(accel, accel));
@@ -100,38 +104,34 @@ var Sinuous = function (canvas) {
 			}, 100);
 
 			gravityBoost = new Boost("gravity", gravityParticle, function () {
-				var i, force;
+				var i, force, diffVector;
 				for (i = 0; i < returnObjects.length; i++) {
 					if (Vector.distance(returnObjects[i].position, player.position) <= player.radius * 8 + returnObjects[i].radius) {
 						if (returnObjects[i] instanceof Particle) { //is an enemy
 							//mathmagics
-							var diffVector = Vector.sub(player.position, returnObjects[i].position);
+							diffVector = Vector.sub(player.position, returnObjects[i].position);
 							force = (-player.radius * 8 * returnObjects[i].radius) / Math.pow(diffVector.mag(), 3);
 							//returnObjects[i].position = new Vector(player.position.x + player.radius * 8, player.position.y - player.radius * 8);
 							returnObjects[i].accel.add(Vector.mult(diffVector, force));
 						}
 					}
 				}
-			}, 1000);
+			}, 500);
 
 			clearBoost = new Boost("clear", clearParticle, function () {
-				clearEnemies();
+				var i;
+				for (i = 0; i < enemies.length; i++) {
+					explosions.push(new Explosion(enemies[i].color, enemies[i].position, enemies[i].velocity, 3).emit(enemies[i].radius * 1.5));
+				}
+				score += ENEMY_SCORE * enemies.length;
+				enemies.splice(0, enemies.length);
+				justclear = true;
 			}, 1);
 
 			availableBoosts = [diffBoost, gravityBoost, clearBoost];
 
 			//returns random boost from boosts array
 			return availableBoosts[rand(0, availableBoosts.length - 1)];
-		},
-
-		clearEnemies = function () {
-			var i;
-			for (i = 0; i < enemies.length; i++) {
-				explosions.push(new Explosion(enemies[i].color, enemies[i].position, enemies[i].velocity, 3).emit(enemies[i].radius * 1.5));
-			}
-			score += ENEMY_SCORE * enemies.length;
-			enemies.splice(0, enemies.length);
-			justclear = true;
 		},
 
 		drawObjects = function () {
@@ -158,7 +158,9 @@ var Sinuous = function (canvas) {
 			for (explosion in explosions) {
 				if (explosions.hasOwnProperty(explosion)) {
 					for (particle in explosions[explosion]) {
-						explosions[explosion][particle].draw(context);
+						if (explosions[explosion].hasOwnProperty(particle)) {
+							explosions[explosion][particle].draw(context);
+						}
 					}
 				}
 			}
@@ -175,7 +177,7 @@ var Sinuous = function (canvas) {
 			for (enemy in enemies) {
 				if (enemies.hasOwnProperty(enemy)) {
 					//enemies[enemy].applyForce(difficulty / 2);
-					//enemies[enemy].applyVelocity(velocity);
+					enemies[enemy].applyVelocity(velocity);
 					enemies[enemy].update();
 					quadtree.insert(enemies[enemy]);
 				}
@@ -193,7 +195,9 @@ var Sinuous = function (canvas) {
 			for (explosion in explosions) {
 				if (explosions.hasOwnProperty(explosion)) {
 					for (particle in explosions[explosion]) {
-						explosions[explosion][particle].update();
+						if (explosions[explosion].hasOwnProperty(particle)) {
+							explosions[explosion][particle].update();
+						}
 					}
 				}
 			}
@@ -231,14 +235,16 @@ var Sinuous = function (canvas) {
 				if (explosions.hasOwnProperty(explosion)) {
 
 					for (particle in explosions[explosion]) {
-						currentPosition = new Vector(explosions[explosion][particle].position.x, explosions[explosion][particle].position.y);
-						if (isOutOfScreen(currentPosition)) {
-							explosions[explosion].splice(particle, 1);
-						}
+						if (explosions[explosion].hasOwnProperty(particle)) {
+							currentPosition = explosions[explosion][particle].clone();
+							if (isOutOfScreen(currentPosition)) {
+								explosions[explosion].splice(particle, 1);
+							}
 
-						if (explosions[explosion].length == 0) {
-							explosions[explosion].splice(explosion, 1);
-							justclear = false;
+							if (explosions[explosion].length === 0) {
+								explosions[explosion].splice(explosion, 1);
+								justclear = false;
+							}
 						}
 					}
 				}
@@ -250,10 +256,10 @@ var Sinuous = function (canvas) {
 		},
 
 		updateScore = function () {
-			var lastPlayerPosition = player.trail[player.trail.length] || player.position;
-
+			var lastPlayerPosition = player.trail[player.trail.length - 1] || player.position;
+			//console.log(Vector.distance(lastPlayerPosition, player.position));
 			score += 0.4 * difficulty;
-			score += Vector.distance(lastPlayerPosition, player.position);
+			score += Vector.distance(lastPlayerPosition, player.position) * 10;
 		},
 
 		updateHUD = function () {
@@ -287,10 +293,52 @@ var Sinuous = function (canvas) {
 					} else if (objs[i] instanceof Boost) { //boost it up
 						player.acquire(objs[i]);
 						removeBoost(objs[i]);
-						console.log("Acquired Boost! It's a " + objs[i].name);
+						//console.log("Acquired Boost! It's a " + objs[i].name);
 					}
 				}
 			}
+		},
+		loop = function () {
+			var diffVelocity, chanceOfBoost = Math.random(),
+				i;
+
+			now = timestamp();
+			dt = dt + Math.min(1, (now - last) / 1000);
+			if (playing && !paused) {
+
+				while (dt > step) {
+					dt = dt - step;
+					increaseDifficulty(0.0008);
+					//console.log(difficulty);
+					updateScore();
+					//console.log(this.score);
+					diffVelocity = Vector.mult(defaultVelocity, difficulty);
+					//diffVelocity.add(step);
+					//console.log(step);
+					if (enemies.length < ENEMIES_FACTOR * difficulty && !justclear) {
+						createEnemies();
+					}
+
+					if (chanceOfBoost > 0.9975) {
+						boosts.push(generateBoost());
+					}
+
+					updateObjects(mouse, diffVelocity, step);
+
+					returnObjects = quadtree.retrieve(player);
+					checkCollision(returnObjects, player);
+					quadtree.clear();
+					clearObjects();
+				}
+				//drawQuadtree(quadtree);
+				//console.log(mouse);
+				updateHUD();
+
+				drawObjects(dt);
+				last = now;
+
+			}
+			window.requestAnimationFrame(loop);
 		};
 
 	this.init = function () {
@@ -306,7 +354,7 @@ var Sinuous = function (canvas) {
 			height: this.canvas.width
 		});
 
-		requestAnimationFrame(loop);
+		window.requestAnimationFrame(loop);
 	};
 
 	this.resume = function () {
@@ -314,49 +362,6 @@ var Sinuous = function (canvas) {
 	};
 
 	this.pause = function () {
-		paused = true;
-	};
-
-	var loop = function () {
-		var diffVelocity, chanceOfBoost = Math.random(),
-			i;
-
-		now = timestamp();
-		dt = dt + Math.min(1, (now - last) / 1000);
-		if (playing && !paused) {
-
-			while (dt > step) {
-				dt = dt - step;
-				increaseDifficulty(0.0008);
-				//console.log(difficulty);
-				updateScore();
-				//console.log(this.score);
-				diffVelocity = Vector.mult(defaultVelocity, difficulty);
-				//diffVelocity.add(step);
-				//console.log(step);
-				if (enemies.length < ENEMIES_FACTOR * difficulty && !justclear) {
-					createEnemies();
-				}
-
-				if (chanceOfBoost > 0.8975) {
-					boosts.push(generateBoost());
-				}
-
-				updateObjects(mouse, diffVelocity, step);
-
-				returnObjects = quadtree.retrieve(player);
-				checkCollision(returnObjects, player);
-				quadtree.clear();
-				clearObjects();
-			}
-			//drawQuadtree(quadtree);
-			//console.log(mouse);
-			updateHUD();
-
-			drawObjects(dt);
-			last = now;
-
-		}
-		requestAnimationFrame(loop);
+		paused = false;
 	};
 };

@@ -1,5 +1,5 @@
-"use strict";
 var Vector = function (x, y) {
+	"use strict";
 	this.x = x;
 	this.y = y;
 
@@ -66,22 +66,27 @@ var Vector = function (x, y) {
 // v2 = new Vector(1,1)
 // v3 = Vector.add(v1,v2);
 Vector.add = function (vect1, vect2) {
+	"use strict";
 	return new Vector(vect1.x + vect2.x, vect1.y + vect2.y);
 };
 
 Vector.sub = function (vect1, vect2) {
+	"use strict";
 	return new Vector(vect1.x - vect2.x, vect1.y - vect2.y);
 };
 
 Vector.mult = function (vect, scalar) {
+	"use strict";
 	return new Vector(vect.x * scalar, vect.y * scalar);
 };
 
 Vector.div = function (vect, scalar) {
+	"use strict";
 	return new Vector(vect.x / scalar, vect.y / scalar);
 };
 
 Vector.distance = function (v1, v2) {
+	"use strict";
 	var dx, dy;
 	dx = v1.x - v2.x;
 	dy = v1.y - v2.y;
@@ -90,5 +95,6 @@ Vector.distance = function (v1, v2) {
 
 // Allows us to get a new vector from angle and magnitude
 Vector.fromAngle = function (angle, magnitude) {
+	"use strict";
 	return new Vector(magnitude * Math.cos(angle), magnitude * Math.sin(angle));
 };
