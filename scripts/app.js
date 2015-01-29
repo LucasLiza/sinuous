@@ -23,8 +23,9 @@ document.addEventListener('mousemove', documentMouseMoveHandler, false);
 var Sinuous = function (canvas) {
 	"use strict";
 	this.canvas = canvas;
-	var hud,
+	var hud = [],
 		time,
+		action,
 		score = 0,
 		difficulty = 1.000,
 		defaultVelocity = new Vector(-1.3, 1),
@@ -40,7 +41,6 @@ var Sinuous = function (canvas) {
 		SCREEN_HEIGHT,
 		SCREEN_WIDTH,
 		ENEMY_SCORE = 100,
-		justclear = false,
 		now,
 		dt = 0,
 		returnObjects,
@@ -121,11 +121,10 @@ var Sinuous = function (canvas) {
 			clearBoost = new Boost("clear", clearParticle, function () {
 				var i;
 				for (i = 0; i < enemies.length; i++) {
-					explosions.push(new Explosion(enemies[i].color, enemies[i].position, enemies[i].velocity, 3).emit(enemies[i].radius));
+					explosions.push(new Explosion(enemies[i].color, enemies[i].position, enemies[i].velocity, 3).emit(2));
 				}
 				score += ENEMY_SCORE * enemies.length;
 				enemies.splice(0, enemies.length);
-				justclear = true;
 			}, 1);
 
 			availableBoosts = [diffBoost, gravityBoost, clearBoost];
@@ -266,11 +265,11 @@ var Sinuous = function (canvas) {
 			var hudText,
 				currentTime = new Date(),
 				timePassed = currentTime.getTime() - time.getTime(),
-				scoreText = "Score: <span>" + Math.floor(score) + "</span>",
-				timeText = " Time: <span>" + (timePassed / 1000).toFixed(2) + "s</span>";
+				scoreText = "Score: " + Math.floor(score),
+				timeText = " Time: " + (timePassed / 1000).toFixed(2) + "s";
 
-			hudText = scoreText + timeText;
-			hud.innerHTML = hudText;
+			hud[0].innerHTML = scoreText;
+			hud[1].innerHTML = timeText;
 		},
 
 		gameOver = function () {
@@ -299,10 +298,11 @@ var Sinuous = function (canvas) {
 				}
 			}
 		},
+
 		loop = function () {
 			var diffVelocity, chanceOfBoost = Math.random(),
-				i;
-			if (playing || explosions.length != 0) {
+				i, id = window.requestAnimationFrame(loop);
+			if (playing) {
 				//console.log(explosions.length);
 				now = timestamp();
 				dt = dt + Math.min(1, (now - last) / 1000);
@@ -337,19 +337,35 @@ var Sinuous = function (canvas) {
 
 				drawObjects(dt);
 				last = now;
+			} else {
+				if (!playing) {
+					canvas.width = canvas.width;
+					action.call(window);
+					return window.cancelAnimationFrame(id);
+				}
 			}
-
-			window.requestAnimationFrame(loop);
 		};
 
-	this.init = function () {
+	this.start = function () {
+		window.requestAnimationFrame(loop);
+	};
+
+	this.init = function (act) {
+		action = act;
 		player = new Player(5, 'green');
-		hud = document.getElementById("hud");
+		hud.push(document.getElementById("score"));
+		hud.push(document.getElementById("time"));
+		score = 0;
+		difficulty = 1.000;
 		SCREEN_HEIGHT = this.canvas.height;
 		SCREEN_WIDTH = this.canvas.width;
 		ENEMIES_FACTOR = (SCREEN_WIDTH / SCREEN_HEIGHT) * 30;
 		context = this.canvas.getContext("2d");
 		time = new Date();
+		last = timestamp();
+		enemies = [];
+		boosts = [];
+		explosions = [];
 		quadtree = new Quadtree({
 			x: 0,
 			y: 0,
@@ -357,6 +373,5 @@ var Sinuous = function (canvas) {
 			height: this.canvas.width
 		});
 		playing = true;
-		window.requestAnimationFrame(loop);
 	};
 };

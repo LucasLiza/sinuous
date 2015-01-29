@@ -15,8 +15,10 @@
 </head>
 
 <body>
-
-	<div id="hud" class="ui"></div>
+	<div class="ui">
+		<span id="score"></span>
+		<span id="time"></span>
+	</div>
 	<div id="menu" class="outer">
 		SINUOUS
 		<div class="menu">
@@ -44,12 +46,22 @@
 		canvas.height = document.body.clientWidth; //document.height is obsolete
 		var game = new Sinuous(canvas);
 
+		function showStatus() {
+			var menu = document.getElementById("menu");
+			var hud = document.getElementById("hud");
+			var time = document.getElementById("time");
+			var score = document.getElementById("score");
+			menu.style.visibility = 'visible'
+			menu.innerHTML = "YOU LOSE! <br>" + score.innerHTML + " dots <br><br><button class='myButton' onclick='startGame()'>Restart</button>";
+		}
 
 		function startGame() {
 			var menu = document.getElementById("menu");
 			menu.style.visibility = 'hidden'
-			game.init();
+			game.init(showStatus);
+			game.start();
 		}
+		console.log('aasdsa');
 	</script>
 
 

@@ -13,14 +13,9 @@ body {
 	font-family: 'Exo 2', sans-serif;
 }
 
-#hud {
+.ui {
 	background-color: #1C1C1C;
 	color: white;
-}
-
-#hud span {
-	font-weight: 500;
-	font-family: 'Helvetica';
 }
 /* The element to be centered, can
    also be of any width and height */
