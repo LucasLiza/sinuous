@@ -2,67 +2,67 @@
 <html>
 
 <head>
-	<meta charset="UTF-8">
-	<script src="../scripts/utils/quadtree.js"></script>
-	<script src="../scripts/utils/vector.js"></script>
-	<script src="../scripts/particle.js"></script>
-	<script src="../scripts/boost.js"></script>
-	<script src="../scripts/player.js"></script>
-	<script src="../scripts/utils/explosion.js"></script>
-	<script src="../scripts/app.js"></script>
-	<link rel="stylesheet" href="../styles/style.css">
-	<title>Sinuous</title>
+  <meta charset="UTF-8">
+  <script src="../scripts/coffee/utils/quadtree.js"></script>
+  <script src="../scripts/coffee/utils/vector.js"></script>
+  <script src="../scripts/coffee/particle.js"></script>
+  <script src="../scripts/coffee/boost.js"></script>
+  <script src="../scripts/coffee/player.js"></script>
+  <script src="../scripts/coffee/utils/explosion.js"></script>
+  <script src="../scripts/coffee/app.js"></script>
+  <link rel="stylesheet" href="../styles/style.css">
+  <title>Sinuous</title>
 </head>
 
 <body>
-	<div class="ui">
-		<span id="score"></span>
-		<span id="time"></span>
-	</div>
-	<div id="menu" class="outer">
-		SINUOUS
-		<div class="menu">
-			<div class="content	">
-				How to play:
-				<div class="center">
-					<ol class="text_left">
-						<li>Avoid the red dots!</li>
-						<li>Move to gain more points.</li>
-						<li>Capture boosts for awesomeness.</li>
-						<li>Survive
-							<br>
-					</ol>
-				</div>
-			</div>
-			<button class="myButton" onclick="startGame()">Play</button>
-		</div>
-	</div>
-	<canvas id="canvasTest">
-	</canvas>
+  <div class="ui">
+    <span id="score"></span>
+    <span id="time"></span>
+  </div>
+  <div id="menu" class="outer">
+    SINUOUS
+    <div class="menu">
+      <div class="content  ">
+        How to play:
+        <div class="center">
+          <ol class="text_left">
+            <li>Avoid the red dots!</li>
+            <li>Move to gain more points.</li>
+            <li>Capture boosts for awesomeness.</li>
+            <li>Survive
+              <br>
+          </ol>
+        </div>
+      </div>
+      <button class="myButton" onclick="startGame()">Play</button>
+    </div>
+  </div>
+  <canvas id="canvasTest">
+  </canvas>
 
-	<script>
-		var canvas = document.getElementById('canvasTest');
-		canvas.width = document.body.clientWidth; //document.width is obsolete
-		canvas.height = document.body.clientWidth; //document.height is obsolete
-		var game = new Sinuous(canvas);
+  <script>
+    var canvas = document.getElementById('canvasTest');
+    canvas.width = document.body.clientWidth; //document.width is obsolete
+    canvas.height = document.body.clientWidth; //document.height is obsolete
+    var game = new Sinuous(canvas);
 
-		function showStatus() {
-			var menu = document.getElementById("menu");
-			var hud = document.getElementById("hud");
-			var time = document.getElementById("time");
-			var score = document.getElementById("score");
-			menu.style.visibility = 'visible'
-			menu.innerHTML = "YOU LOSE! <br>" + score.innerHTML + " dots <br><br><button class='myButton' onclick='startGame()'>Restart</button>";
-		}
+    function showStatus() {
+      var menu = document.getElementById("menu");
+      var hud = document.getElementById("hud");
+      var time = document.getElementById("time");
+      var score = document.getElementById("score");
+      menu.style.visibility = 'visible'
+      menu.innerHTML = "YOU LOSE! <br>" + score.innerHTML + " dots <br><br><button class='myButton' onclick='startGame()'>Restart</button>";
+    }
 
-		function startGame() {
-			var menu = document.getElementById("menu");
-			menu.style.visibility = 'hidden'
-			game.init(showStatus);
-			game.start();
-		}
-		console.log('aasdsa');
-	</script>
+    function startGame() {
+      var menu = document.getElementById("menu");
+      menu.style.visibility = 'hidden'
+      game.init(showStatus);
+      game.start();
+    }
+    console.log('aasdsa');
+  </script>
 
 
 </body>

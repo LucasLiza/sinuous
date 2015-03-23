@@ -49,3 +49,59 @@ class Quadtree
         delete @nodes[currentNode]
     this
 
+  indexOf: (rect) ->
+    nodeIndex = -1
+    verticalCenter = @bounds.x + (@bounds.width / 2)
+    horizontalCenter = @bounds.y + (@bounds.height / 2)
+    isOnTop = rect.position.y < horizontalCenter and rect.position.y + rect.radius < horizontalCenter
+    isOnBottom = rect.position.y > horizontalCenter;
+
+    if rect.position.x < verticalCenter and rect.position.x + rect.radius < verticalCenter
+      if isOnTop
+        nodeIndex = 1
+      else if isOnBottom
+        nodeIndex = 2
+      else if rect.position.x > verticalCenter
+        if isOnTop
+          nodeIndex = 0
+        else if isOnBottom
+          nodeIndex = 3
+    nodeIndex
+
+  insert: (rect) ->
+    if typeof @nodes[0] isnt 'undefined'
+      nodeIndex = @indexOf(rect)
+
+      if nodeIndex isnt -1
+        @nodes[nodeIndex].insert(rect);
+        return
+
+    @objects.push(rect)
+
+    if @objects.length > @maxObjects and @level < @maxLevels
+      if typeof @nodes[0] is 'undefined'
+        @split()
+
+      i = 0
+      while i < @objects.length
+        nodeIndex = @indexOf(@objects[i])
+        if @nodeIndex isnt -1
+          @nodes[nodeIndex].insert(@objects.splice(i,1)[0]);
+        else
+          i = i + 1
+
+    this
+
+  retrieve: (rect) ->
+    nodeIndex = @indexOf(rect)
+    returnObjects = @objects
+    if typeof @nodes[0] isnt 'undefined'
+      if nodeIndex isnt -1
+        returnObjects = returnObjects.concat(@nodes[nodeIndex].retrieve(rect))
+      else
+        curr = 0
+        while curr < @nodes.length
+          returnObjects = returnObjects.concat(@nodes[curr].retrieve(rect))
+          curr = curr + 1
+
+    returnObjects
