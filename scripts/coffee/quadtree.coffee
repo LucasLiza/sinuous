@@ -105,3 +105,5 @@ class Quadtree
           curr = curr + 1
 
     returnObjects
+
+if window? then window.Quadtree = Quadtree else exports.Quadtree = Quadtree

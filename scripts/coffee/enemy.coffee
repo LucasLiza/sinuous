@@ -10,3 +10,5 @@ class Enemy extends Particle
 
     generatePosition: ->
     super generateSize(), 'red', position, velocity, accel
+
+if window? then window.Enemy = Enemy else exports.Enemy = Enemy

@@ -9,3 +9,4 @@ class Explosion
       velocity = Vector.fromAngle(angle, magnitude)
       new Particle(1, @color, position, velocity, new Vector(1,1))
 
+if window? then window.Explosion = Explosion else exports.Explosion = Explosion

@@ -26,4 +26,10 @@
 
   })(Particle);
 
+  if (typeof window !== "undefined" && window !== null) {
+    window.Enemy = Enemy;
+  } else {
+    exports.Enemy = Enemy;
+  }
+
 }).call(this);

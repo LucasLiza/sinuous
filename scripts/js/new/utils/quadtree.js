@@ -97,10 +97,10 @@
         if (typeof this.nodes[0] === 'undefined') {
           this.split();
         }
-        i = 0;
+
         while (i < this.objects.length) {
           nodeIndex = this.indexOf(this.objects[i]);
-          if (this.nodeIndex !== -1) {
+          if (nodeIndex !== -1) {
             this.nodes[nodeIndex].insert(this.objects.splice(i, 1)[0]);
           } else {
             i = i + 1;
@@ -131,5 +131,11 @@
     return Quadtree;
 
   })();
+
+  if (typeof window !== "undefined" && window !== null) {
+    window.Quadtree = Quadtree;
+  } else {
+    exports.Quadtree = Quadtree;
+  }
 
 }).call(this);

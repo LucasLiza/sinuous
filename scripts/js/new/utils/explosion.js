@@ -26,4 +26,10 @@
 
   })();
 
+  if (typeof window !== "undefined" && window !== null) {
+    window.Explosion = Explosion;
+  } else {
+    exports.Explosion = Explosion;
+  }
+
 }).call(this);

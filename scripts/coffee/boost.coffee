@@ -23,3 +23,5 @@ class Boost extends Particle
 
   active: ->
     @duration > 0
+
+if window? then window.Boost = Boost else exports.Boost = Boost

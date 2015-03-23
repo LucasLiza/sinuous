@@ -34,4 +34,10 @@
 
   })();
 
+  if (typeof window !== "undefined" && window !== null) {
+    window.Particle = Particle;
+  } else {
+    exports.Particle = Particle;
+  }
+
 }).call(this);

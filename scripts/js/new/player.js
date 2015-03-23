@@ -90,4 +90,10 @@
 
   })();
 
+  if (typeof window !== "undefined" && window !== null) {
+    window.Player = Player;
+  } else {
+    exports.Player = Player;
+  }
+
 }).call(this);

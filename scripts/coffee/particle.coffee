@@ -16,3 +16,5 @@ class Particle
 
   clone: ->
     new Particle @radius, @color, @position, @velocity, @accel
+
+if window? then window.Particle = Particle else exports.Particle = Particle

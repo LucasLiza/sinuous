@@ -66,3 +66,4 @@ class Player
 
     return
 
+if window? then window.Player = Player else exports.Player = Player

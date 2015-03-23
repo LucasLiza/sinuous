@@ -43,4 +43,10 @@
 
   })(Particle);
 
+  if (typeof window !== "undefined" && window !== null) {
+    window.Boost = Boost;
+  } else {
+    exports.Boost = Boost;
+  }
+
 }).call(this);
