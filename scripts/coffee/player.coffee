@@ -9,25 +9,25 @@ class Player
       switch element.name
         when "diff"
           context.beginPath()
-          context.arc @position.x, @position.y, @radius * 8, 0, 2 * Math.PI, no
+          context.arc @position.x, @position.y, @size * 8, 0, 2 * Math.PI, no
           context.fillStyle = 'rgba(250,250,250,0.5)'
           context.fill()
           context.closePath()
         when "gravity"
           context.beginPath()
-          context.arc @position.x, @position.y, @radius * 8, 0, 2 * Math.PI, no
+          context.arc @position.x, @position.y, @size * 8, 0, 2 * Math.PI, no
           context.fillStyle = 'rgba(0,0,255,0.3)'
           context.fill()
           context.closePath()
         when "clear"
           context.beginPath()
-          context.arc @position.x, @position.y, @radius * 8, 0, 2 * Math.PI, no
+          context.arc @position.x, @position.y, @size * 8, 0, 2 * Math.PI, no
           context.fillStyle = 'purple'
           context.fill()
           context.closePath()
 
     context.beginPath()
-    context.arc @position.x, @position.y, @radius, 0, 2 * Math.PI, no
+    context.arc @position.x, @position.y, @size, 0, 2 * Math.PI, no
     context.fillStyle = @color
     context.fill()
     context.closePath()

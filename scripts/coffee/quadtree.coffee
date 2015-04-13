@@ -43,7 +43,7 @@ class Quadtree
   clear: ->
     @objects = []
     for element, currentNode in @nodes
-      if typeof element isnt undefined
+      if element?
         @nodes[currentNode].clear()
       else
         delete @nodes[currentNode]
@@ -69,7 +69,7 @@ class Quadtree
     nodeIndex
 
   insert: (rect) ->
-    if typeof @nodes[0] isnt 'undefined'
+    if @nodes[0]?
       nodeIndex = @indexOf(rect)
 
       if nodeIndex isnt -1
@@ -79,7 +79,7 @@ class Quadtree
     @objects.push(rect)
 
     if @objects.length > @maxObjects and @level < @maxLevels
-      if typeof @nodes[0] is 'undefined'
+      if not @nodes[0]?
         @split()
 
       i = 0
@@ -95,7 +95,7 @@ class Quadtree
   retrieve: (rect) ->
     nodeIndex = @indexOf(rect)
     returnObjects = @objects
-    if typeof @nodes[0] isnt 'undefined'
+    if @nodes[0]?
       if nodeIndex isnt -1
         returnObjects = returnObjects.concat(@nodes[nodeIndex].retrieve(rect))
       else
