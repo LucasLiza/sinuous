@@ -352,7 +352,6 @@ var Sinuous = function (canvas) {
 
   this.init = function (act) {
     action = act;
-    new Vector (1, 1);
     player = new Player(5, 'green');
     hud.push(document.getElementById("score"));
     hud.push(document.getElementById("time"));

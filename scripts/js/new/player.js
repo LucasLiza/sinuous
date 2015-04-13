@@ -18,28 +18,28 @@
         switch (element.name) {
           case "diff":
             context.beginPath();
-            context.arc(this.position.x, this.position.y, this.radius * 8, 0, 2 * Math.PI, false);
+            context.arc(this.position.x, this.position.y, this.size * 8, 0, 2 * Math.PI, false);
             context.fillStyle = 'rgba(250,250,250,0.5)';
             context.fill();
             context.closePath();
             break;
           case "gravity":
             context.beginPath();
-            context.arc(this.position.x, this.position.y, this.radius * 8, 0, 2 * Math.PI, false);
+            context.arc(this.position.x, this.position.y, this.size * 8, 0, 2 * Math.PI, false);
             context.fillStyle = 'rgba(0,0,255,0.3)';
             context.fill();
             context.closePath();
             break;
           case "clear":
             context.beginPath();
-            context.arc(this.position.x, this.position.y, this.radius * 8, 0, 2 * Math.PI, false);
+            context.arc(this.position.x, this.position.y, this.size * 8, 0, 2 * Math.PI, false);
             context.fillStyle = 'purple';
             context.fill();
             context.closePath();
         }
       }
       context.beginPath();
-      context.arc(this.position.x, this.position.y, this.radius, 0, 2 * Math.PI, false);
+      context.arc(this.position.x, this.position.y, this.size, 0, 2 * Math.PI, false);
       context.fillStyle = this.color;
       context.fill();
       context.closePath();

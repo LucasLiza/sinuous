@@ -50,7 +50,7 @@
       _ref = this.nodes;
       for (currentNode = _i = 0, _len = _ref.length; _i < _len; currentNode = ++_i) {
         element = _ref[currentNode];
-        if (typeof element !== void 0) {
+        if (element != null) {
           this.nodes[currentNode].clear();
         } else {
           delete this.nodes[currentNode];
@@ -83,7 +83,7 @@
 
     Quadtree.prototype.insert = function(rect) {
       var i, nodeIndex;
-      if (typeof this.nodes[0] !== 'undefined') {
+      if (this.nodes[0] != null) {
         nodeIndex = this.indexOf(rect);
         if (nodeIndex !== -1) {
           this.nodes[nodeIndex].insert(rect);
@@ -92,7 +92,7 @@
       }
       this.objects.push(rect);
       if (this.objects.length > this.maxObjects && this.level < this.maxLevels) {
-        if (typeof this.nodes[0] === 'undefined') {
+        if (this.nodes[0] == null) {
           this.split();
         }
         i = 0;
@@ -111,7 +111,7 @@
       var curr, nodeIndex, returnObjects;
       nodeIndex = this.indexOf(rect);
       returnObjects = this.objects;
-      if (typeof this.nodes[0] !== 'undefined') {
+      if (this.nodes[0] != null) {
         if (nodeIndex !== -1) {
           returnObjects = returnObjects.concat(this.nodes[nodeIndex].retrieve(rect));
         } else {
