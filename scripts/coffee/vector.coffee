@@ -42,7 +42,7 @@ class Vector
     this
 
   limit: (max) ->
-    @normalize and @mult max if @mag() > max
+    @normalize() and @mult max if @mag() > max
 
   distance: (vector) ->
     dx = @x - vector.x

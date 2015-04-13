@@ -43,7 +43,6 @@
       context.fillStyle = this.color;
       context.fill();
       context.closePath();
-      return this;
     };
 
     Player.prototype.drawTrail = function(context) {
@@ -59,7 +58,6 @@
       }
       context.stroke();
       context.closePath();
-      return this;
     };
 
     Player.prototype.update = function(position, gameVelocity) {

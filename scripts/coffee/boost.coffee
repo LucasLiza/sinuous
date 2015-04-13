@@ -12,14 +12,14 @@ class Boost extends Particle
     context.fillStyle = "white"
     context.font = @radius * 1.5 + "px Helvetica";
     context.fillText @id, @position.x - @radius / 2, @position.y + @radius / 2
-    this
+    return
 
   doAction: ->
     if @duration > 0
       @action()
     else
       --@duration
-    this
+    return
 
   active: ->
     @duration > 0

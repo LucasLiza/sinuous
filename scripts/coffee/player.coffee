@@ -28,10 +28,10 @@ class Player
 
     context.beginPath()
     context.arc @position.x, @position.y, @radius, 0, 2 * Math.PI, no
-    context.fillStyle = this.color
+    context.fillStyle = @color
     context.fill()
     context.closePath()
-    this
+    return
 
   drawTrail: (context) ->
     context.fillStyle = 'rgba(0,0,0,0.05)'
@@ -44,7 +44,7 @@ class Player
 
     context.stroke()
     context.closePath()
-    this
+    return
 
   update: (position, gameVelocity) ->
     @position.x += (position.x - @position.x) * 0.13

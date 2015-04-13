@@ -200,7 +200,7 @@ var Sinuous = function (canvas) {
           }
         }
       }
-
+      console.log("enemies: "+enemies.length);
     },
 
     isOutOfScreen = function (position) {

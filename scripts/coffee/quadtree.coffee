@@ -38,7 +38,7 @@ class Quadtree
       height: subnodeHeight
     }, @maxObjects, @maxLevels, nextLevel)
 
-    this
+    return
 
   clear: ->
     @objects = []
@@ -47,7 +47,7 @@ class Quadtree
         @nodes[currentNode].clear()
       else
         delete @nodes[currentNode]
-    this
+    return
 
   indexOf: (rect) ->
     nodeIndex = -1
@@ -61,11 +61,11 @@ class Quadtree
         nodeIndex = 1
       else if isOnBottom
         nodeIndex = 2
-      else if rect.position.x > verticalCenter
-        if isOnTop
-          nodeIndex = 0
-        else if isOnBottom
-          nodeIndex = 3
+    else if rect.position.x > verticalCenter
+      if isOnTop
+        nodeIndex = 0
+      else if isOnBottom
+        nodeIndex = 3
     nodeIndex
 
   insert: (rect) ->
@@ -85,12 +85,12 @@ class Quadtree
       i = 0
       while i < @objects.length
         nodeIndex = @indexOf(@objects[i])
-        if @nodeIndex isnt -1
+        if nodeIndex isnt -1
           @nodes[nodeIndex].insert(@objects.splice(i,1)[0]);
         else
           i = i + 1
 
-    this
+    return
 
   retrieve: (rect) ->
     nodeIndex = @indexOf(rect)

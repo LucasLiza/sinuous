@@ -23,7 +23,6 @@
       context.fillStyle = "white";
       context.font = this.radius * 1.5 + "px Helvetica";
       context.fillText(this.id, this.position.x - this.radius / 2, this.position.y + this.radius / 2);
-      return this;
     };
 
     Boost.prototype.doAction = function() {
@@ -32,7 +31,6 @@
       } else {
         --this.duration;
       }
-      return this;
     };
 
     Boost.prototype.active = function() {

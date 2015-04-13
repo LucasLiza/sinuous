@@ -42,7 +42,6 @@
         width: subnodeWidth,
         height: subnodeHeight
       }, this.maxObjects, this.maxLevels, nextLevel);
-      return this;
     };
 
     Quadtree.prototype.clear = function() {
@@ -57,7 +56,6 @@
           delete this.nodes[currentNode];
         }
       }
-      return this;
     };
 
     Quadtree.prototype.indexOf = function(rect) {
@@ -72,12 +70,12 @@
           nodeIndex = 1;
         } else if (isOnBottom) {
           nodeIndex = 2;
-        } else if (rect.position.x > verticalCenter) {
-          if (isOnTop) {
-            nodeIndex = 0;
-          } else if (isOnBottom) {
-            nodeIndex = 3;
-          }
+        }
+      } else if (rect.position.x > verticalCenter) {
+        if (isOnTop) {
+          nodeIndex = 0;
+        } else if (isOnBottom) {
+          nodeIndex = 3;
         }
       }
       return nodeIndex;
@@ -97,7 +95,7 @@
         if (typeof this.nodes[0] === 'undefined') {
           this.split();
         }
-
+        i = 0;
         while (i < this.objects.length) {
           nodeIndex = this.indexOf(this.objects[i]);
           if (nodeIndex !== -1) {
@@ -107,7 +105,6 @@
           }
         }
       }
-      return this;
     };
 
     Quadtree.prototype.retrieve = function(rect) {

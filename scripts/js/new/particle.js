@@ -15,15 +15,15 @@
       context.arc(this.position.x, this.position.y, this.radius, 0, 2 * Math.PI, false);
       context.fillStyle = this.color;
       context.fill();
-      return context.closePath();
+      context.closePath();
     };
 
     Particle.prototype.applyVelocity = function(newVelocity) {
-      return this.velocity = newVelocity.clone();
+      this.velocity = newVelocity.clone();
     };
 
     Particle.prototype.update = function() {
-      return this.position.add(Vector.add(this.velocity, this.accel));
+      this.position.add(Vector.add(this.velocity, this.accel));
     };
 
     Particle.prototype.clone = function() {

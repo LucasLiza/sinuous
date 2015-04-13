@@ -62,7 +62,7 @@
 
     Vector.prototype.limit = function(max) {
       if (this.mag() > max) {
-        return this.normalize && this.mult(max);
+        return this.normalize() && this.mult(max);
       }
     };
 

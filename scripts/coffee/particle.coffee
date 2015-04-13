@@ -7,12 +7,15 @@ class Particle
     context.fillStyle = @color
     context.fill()
     context.closePath()
+    return
 
   applyVelocity: (newVelocity) ->
     @velocity = newVelocity.clone()
+    return
 
   update: ->
     @position.add Vector.add(@velocity, @accel)
+    return
 
   clone: ->
     new Particle @radius, @color, @position, @velocity, @accel
