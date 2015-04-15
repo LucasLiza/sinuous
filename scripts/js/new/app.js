@@ -1,14 +1,14 @@
-(function() {
+(function () {
   var Sinuous, documentMouseMoveHandler, mouse;
 
   mouse = new Vector(100, 100);
 
-  documentMouseMoveHandler = function(event) {
+  documentMouseMoveHandler = function (event) {
     mouse = new Vector(event.clientX, event.clientY);
   };
 
   if (window.addEventListener) {
-    window.addEventListener('load', function() {
+    window.addEventListener('load', function () {
       'use strict';
       window.addEventListener('focus', this.game.resume);
       window.addEventListener('blur', this.game.pause);
@@ -17,7 +17,7 @@
 
   document.addEventListener('mousemove', documentMouseMoveHandler, false);
 
-  Sinuous = (function() {
+  Sinuous = (function () {
     var DEFAULT_VELOCITY, ENEMIES_FACTOR, ENEMY_SCORE, SCREEN_HEIGHT, SCREEN_WIDTH, action, animating, boosts, checkCollision, clearObjects, context, createBoost, createEnemies, difficulty, drawObjects, dt, enemies, explosions, gameLoop, gameOver, generatePosition, generateStartVelocity, hud, increaseDifficulty, isOutOfScreen, last, now, player, playing, quadtree, rand, removeBoost, returnObjects, score, step, time, timestamp, updateHUD, updateObjects, updateScore;
 
     function Sinuous(canvas) {
@@ -68,7 +68,7 @@
 
     hud = [];
 
-    timestamp = function() {
+    timestamp = function () {
       if (window.performance && window.performance.now) {
         return window.performance.now();
       } else {
@@ -78,18 +78,18 @@
 
     last = timestamp();
 
-    rand = function(min, max) {
+    rand = function (min, max) {
       var offset, range;
       offset = min;
       range = (max - min) + 1;
       return Math.floor(Math.random() * range) + offset;
     };
 
-    generateStartVelocity = function() {
+    generateStartVelocity = function () {
       return Vector.mult(DEFAULT_VELOCITY, 6);
     };
 
-    generatePosition = function() {
+    generatePosition = function () {
       var position;
       position = new Vector(0, 0);
       if (Math.random() > 0.5) {
@@ -102,7 +102,7 @@
       return position;
     };
 
-    createEnemies = function() {
+    createEnemies = function () {
       var accel, numberOfEnemies;
       numberOfEnemies = rand(10, 15);
       while (--numberOfEnemies >= 0) {
@@ -111,10 +111,11 @@
       }
     };
 
-    createBoost = function() {
-      var gravityAction, gravityBoost, position;
+    createBoost = function () {
+      var accel, gravityAction, gravityBoost, position;
       position = generatePosition();
-      gravityAction = function() {
+      accel = rand(3, 5);
+      gravityAction = function () {
         var diffVector, force, i;
         i = 0;
         while (i < returnObjects.length) {
@@ -132,7 +133,7 @@
       return gravityBoost;
     };
 
-    drawObjects = function() {
+    drawObjects = function () {
       var boost, enemy, explosion, particle, _i, _j, _k, _l, _len, _len1, _len2, _len3;
       context.fillStyle = "black";
       canvas.width = canvas.width;
@@ -155,12 +156,11 @@
       }
     };
 
-    updateObjects = function(playerPosition, velocity, step) {
+    updateObjects = function (playerPosition, velocity, step) {
       var boost, enemy, explosion, particle, _i, _j, _k, _l, _len, _len1, _len2, _len3;
       if ((playerPosition != null) && !animating) {
         player.update(playerPosition, velocity);
       }
-      console.log(enemies.length);
       for (_i = 0, _len = enemies.length; _i < _len; _i++) {
         enemy = enemies[_i];
         enemy.applyVelocity(velocity);
@@ -181,51 +181,65 @@
       }
     };
 
-    isOutOfScreen = function(position) {
+    isOutOfScreen = function (position) {
       return position.x < 0 || position.x > SCREEN_WIDTH + 20 || position.y < -20 || position.y > SCREEN_HEIGHT + 20;
     };
 
-    clearObjects = function() {
-      var boost, eIndex, enemy, explosion, index, pIndex, particle, _i, _j, _k, _l, _len, _len1, _len2, _len3;
-      for (index = _i = 0, _len = enemies.length; _i < _len; index = ++_i) {
-        enemy = enemies[index];
-        if (isOutOfScreen(enemy.position)) {
-          console.log("removing enemy");
-          enemies.slice(index, 1);
-        }
-      }
-      for (index = _j = 0, _len1 = boosts.length; _j < _len1; index = ++_j) {
-        boost = boosts[index];
-        if (isOutOfScreen(boost.position)) {
-          boosts.slice(index, 1);
-        }
-      }
-      for (eIndex = _k = 0, _len2 = explosions.length; _k < _len2; eIndex = ++_k) {
-        explosion = explosions[eIndex];
-        for (pIndex = _l = 0, _len3 = explosion.length; _l < _len3; pIndex = ++_l) {
-          particle = explosion[pIndex];
-          if (isOutOfScreen(particle.position)) {
-            explosion.slice(pIndex, 1);
+    clearObjects = function () {
+      var boost, enemy, explosion, particle, currentPosition;
+      for (enemy in enemies) {
+        if (enemies.hasOwnProperty(enemy)) {
+          currentPosition = new Vector(enemies[enemy].position.x, enemies[enemy].position.y);
+          // remove from the enemies array, the dots that are out of bounds
+          if (isOutOfScreen(currentPosition)) {
+            enemies.splice(enemy, 1);
+            //console.log("removed -> " + enemy);
           }
-          if (explosion.length === 0) {
-            explosions.slice(eIndex, 1);
+        }
+      }
+
+      for (boost in boosts) {
+        if (boosts.hasOwnProperty(boost)) {
+          currentPosition = new Vector(boosts[boost].position.x, boosts[boost].position.y);
+          if (isOutOfScreen(currentPosition)) {
+            boosts.splice(boost, 1);
+            //console.log("removed boost -> " + boost);
+          }
+        }
+      }
+
+      for (explosion in explosions) {
+        if (explosions.hasOwnProperty(explosion)) {
+
+          for (particle in explosions[explosion]) {
+            if (explosions[explosion].hasOwnProperty(particle)) {
+              currentPosition = explosions[explosion][particle].position;
+              //console.log(currentPosition);
+              if (isOutOfScreen(currentPosition)) {
+                explosions[explosion].splice(particle, 1);
+              }
+
+              if (explosions[explosion].length === 0) {
+                explosions.splice(explosion, 1);
+              }
+            }
           }
         }
       }
     };
 
-    increaseDifficulty = function(amount) {
+    increaseDifficulty = function (amount) {
       difficulty += amount;
     };
 
-    updateScore = function() {
+    updateScore = function () {
       var lastPlayerPosition;
       lastPlayerPosition = player.trail[player.trail.length - 1] || player.position;
       score += 0.4 * difficulty;
       return score += Vector.distance(lastPlayerPosition, player.position) * 10;
     };
 
-    updateHUD = function() {
+    updateHUD = function () {
       var currentTime, scoreText, timePassed, timeText;
       currentTime = new Date();
       timePassed = currentTime.getTime() - time.getTime();
@@ -235,12 +249,12 @@
       hud[1].innerHTML = timeText;
     };
 
-    gameOver = function() {
+    gameOver = function () {
       explosions.push(new Explosion(player.color, player.position, generateStartVelocity(), 3).emit(player.radius));
       playing = false;
     };
 
-    removeBoost = function(boost) {
+    removeBoost = function (boost) {
       var index;
       index = boosts.indexOf(boost);
       if (index > -1) {
@@ -248,7 +262,7 @@
       }
     };
 
-    checkCollision = function(objs, target) {
+    checkCollision = function (objs, target) {
       var obj, _i, _len;
       for (_i = 0, _len = objs.length; _i < _len; _i++) {
         obj = objs[_i];
@@ -263,7 +277,7 @@
       }
     };
 
-    gameLoop = function() {
+    gameLoop = function () {
       var chanceOfBoost, diffVelocity, id;
       chanceOfBoost = Math.random();
       id = window.requestAnimationFrame(gameLoop);
@@ -299,11 +313,11 @@
       }
     };
 
-    Sinuous.prototype.start = function() {
+    Sinuous.prototype.start = function () {
       window.requestAnimationFrame(gameLoop);
     };
 
-    Sinuous.prototype.init = function(act) {
+    Sinuous.prototype.init = function (act) {
       action = act;
       player = new Player(5, 'green');
       hud.push(document.getElementById("score"));

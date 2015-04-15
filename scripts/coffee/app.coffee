@@ -74,6 +74,7 @@ class Sinuous
 
   createBoost = ->
     position = generatePosition()
+    accel = rand(3,5)
     gravityAction = ->
       i = 0
       while i < returnObjects.length
@@ -109,7 +110,6 @@ class Sinuous
     if playerPosition? and not animating
       player.update playerPosition, velocity
 
-    console.log enemies.length
     for enemy in enemies
       enemy.applyVelocity(velocity)
       enemy.update()
