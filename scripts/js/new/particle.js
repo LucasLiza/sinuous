@@ -23,6 +23,8 @@
     };
 
     Particle.prototype.update = function() {
+      if (typeof this.position == 'undefined')
+        debugger
       this.position.add(Vector.add(this.velocity, this.accel));
     };
 

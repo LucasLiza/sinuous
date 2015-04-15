@@ -7,18 +7,16 @@
     __extends(Enemy, _super);
 
     function Enemy(position, velocity, accel) {
-      ({
-        rand: function(min, max) {
-          var offset, range;
-          offset = min;
-          range = (max - min) + 1;
-          return Math.floor(Math.random() * range) + offset;
-        },
-        generateSize: function() {
-          return rand(3, 5);
-        },
-        generatePosition: function() {}
-      });
+      var generateSize, rand;
+      rand = function(min, max) {
+        var offset, range;
+        offset = min;
+        range = (max - min) + 1;
+        return Math.floor(Math.random() * range) + offset;
+      };
+      generateSize = function() {
+        return rand(3, 5);
+      };
       Enemy.__super__.constructor.call(this, generateSize(), 'red', position, velocity, accel);
     }
 
