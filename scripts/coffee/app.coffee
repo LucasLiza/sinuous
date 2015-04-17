@@ -78,10 +78,10 @@ class Sinuous
     gravityAction = ->
       i = 0
       while i < returnObjects.length
-        if Vector.distance(returnObjects[i].position, player.position) <= player.radius * 8 + returnObjects[i].radius
+        if Vector.distance(returnObjects[i].position, player.position) <= player.size * 8 + returnObjects[i].radius
           if returnObjects[i] instanceof Particle
             diffVector = Vector.sub(player.position, returnObjects[i].position)
-            force = -player.radius * 8 * returnObjects[i].radius / diffVector.mag() ** 3
+            force = -player.size * 8 * returnObjects[i].radius / diffVector.mag() ** 3
           returnObjects[i].accel.add Vector.mult(diffVector, force)
         i++
       return
@@ -95,53 +95,54 @@ class Sinuous
     player.draw context
     player.drawTrail context
 
-    for enemy in enemies
-      enemy.draw context
+    for own enemy of enemies
+      enemies[enemy].draw context
 
-    for boost in boosts
-      boost.draw context
+    for own boost of boosts
+      boosts[boost].draw context
 
-    for explosion in explosions
-      for particle in explosion
-        particle.draw context
+    for own explosion of explosions
+      for own particle of explosions[explosion]
+        explosions[explosion][particle].draw context
     return
 
   updateObjects = (playerPosition, velocity, step) ->
     if playerPosition? and not animating
       player.update playerPosition, velocity
 
-    for enemy in enemies
-      enemy.applyVelocity(velocity)
-      enemy.update()
-      quadtree.insert(enemy)
+    for own enemy of enemies
+      enemies[enemy].applyVelocity(velocity)
+      enemies[enemy].update()
+      quadtree.insert(enemies[enemy])
 
-    for boost in boosts
-      boost.update()
-      quadtree.insert(boost)
+    for own boost of boosts
+      boosts[boost].update()
+      quadtree.insert(boosts[boost])
 
-    for explosion in explosions
-      for particle in explosion
-        particle.update()
+    for own explosion of explosions
+      for own particle of explosions[explosion]
+        explosions[explosion][particle].update()
     return
 
   isOutOfScreen = (position) ->
     position.x < 0 or position.x > SCREEN_WIDTH + 20 or position.y < -20 || position.y > SCREEN_HEIGHT + 20
 
   clearObjects = ->
-    for enemy, index in enemies
-      if isOutOfScreen enemy.position
-        enemies[index...1]
+    for own enemy of enemies
+      if isOutOfScreen enemies[enemy].position
+        enemies[enemy...1]
 
-    for boost, index in boosts
-      if isOutOfScreen boost.position
-        boosts[index...1]
+    for own boost of boosts
+      if isOutOfScreen boosts[boost].position
+        boosts[boost...1]
 
-    for explosion, eIndex in explosions
-      for particle, pIndex in explosion
-        if isOutOfScreen particle.position
-          explosion[pIndex...1]
-        if explosion.length is 0
-          explosions[eIndex...1]
+    for own explosion of explosions
+      for own particle of explosions[explosion]
+        currentPosition = explosions[explosion][particle].position
+        if isOutOfScreen(currentPosition)
+          explosions[explosion][particle...1]
+        if explosions[explosion].length == 0
+          explosions[explosion...1]
     return
 
   increaseDifficulty = (amount) ->
@@ -164,7 +165,7 @@ class Sinuous
     return
 
   gameOver = ->
-    explosions.push new Explosion(player.color, player.position, generateStartVelocity(), 3).emit(player.radius)
+    explosions.push new Explosion(player.color, player.position, generateStartVelocity(), 3).emit(player.size)
     playing = false
     return
 
@@ -175,7 +176,7 @@ class Sinuous
 
   checkCollision = (objs, target) ->
     for obj in objs
-      if Vector.distance(obj.position, target.position) <= target.radius + obj.radius
+      if Vector.distance(obj.position, target.position) <= target.size + obj.radius
         if obj instanceof Enemy
           gameOver()
         else if obj instanceof Boost

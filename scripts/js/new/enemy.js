@@ -20,6 +20,10 @@
       Enemy.__super__.constructor.call(this, generateSize(), 'red', position, velocity, accel);
     }
 
+    Enemy.prototype.update = function() {
+      this.position.add(Vector.add(this.velocity, this.accel));
+    };
+
     return Enemy;
 
   })(Particle);

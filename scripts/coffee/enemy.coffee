@@ -9,5 +9,7 @@ class Enemy extends Particle
       rand 3, 5
 
     super generateSize(), 'red', position, velocity, accel
-
+  update: () ->
+    @position.add(Vector.add @velocity, @accel)
+    return
 if window? then window.Enemy = Enemy else exports.Enemy = Enemy

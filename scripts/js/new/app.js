@@ -1,5 +1,6 @@
 (function () {
-  var Sinuous, documentMouseMoveHandler, mouse;
+  var Sinuous, documentMouseMoveHandler, mouse,
+    __hasProp = {}.hasOwnProperty;
 
   mouse = new Vector(100, 100);
 
@@ -104,7 +105,7 @@
 
     createEnemies = function () {
       var accel, numberOfEnemies;
-      numberOfEnemies = rand(10, 15);
+      numberOfEnemies = 8 + (Math.random() * 13);
       while (--numberOfEnemies >= 0) {
         accel = rand(1, 5);
         enemies.push(new Enemy(generatePosition(), generateStartVelocity(), new Vector(-accel, accel)));
@@ -119,10 +120,10 @@
         var diffVector, force, i;
         i = 0;
         while (i < returnObjects.length) {
-          if (Vector.distance(returnObjects[i].position, player.position) <= player.radius * 8 + returnObjects[i].radius) {
+          if (Vector.distance(returnObjects[i].position, player.position) <= player.size * 8 + returnObjects[i].radius) {
             if (returnObjects[i] instanceof Particle) {
               diffVector = Vector.sub(player.position, returnObjects[i].position);
-              force = -player.radius * 8 * returnObjects[i].radius / Math.pow(diffVector.mag(), 3);
+              force = -player.size * 8 * returnObjects[i].radius / Math.pow(diffVector.mag(), 3);
             }
             returnObjects[i].accel.add(Vector.mult(diffVector, force));
           }
@@ -134,49 +135,51 @@
     };
 
     drawObjects = function () {
-      var boost, enemy, explosion, particle, _i, _j, _k, _l, _len, _len1, _len2, _len3;
+      var boost, enemy, explosion, particle, _ref;
       context.fillStyle = "black";
-      canvas.width = canvas.width;
+      this.canvas.width = this.canvas.width;
       player.draw(context);
       player.drawTrail(context);
-      for (_i = 0, _len = enemies.length; _i < _len; _i++) {
-        enemy = enemies[_i];
-        enemy.draw(context);
+      for (enemy in enemies) {
+        if (!__hasProp.call(enemies, enemy)) continue;
+        enemies[enemy].draw(context);
       }
-      for (_j = 0, _len1 = boosts.length; _j < _len1; _j++) {
-        boost = boosts[_j];
-        boost.draw(context);
+      for (boost in boosts) {
+        if (!__hasProp.call(boosts, boost)) continue;
+        boosts[boost].draw(context);
       }
-      for (_k = 0, _len2 = explosions.length; _k < _len2; _k++) {
-        explosion = explosions[_k];
-        for (_l = 0, _len3 = explosion.length; _l < _len3; _l++) {
-          particle = explosion[_l];
-          particle.draw(context);
+      for (explosion in explosions) {
+        if (!__hasProp.call(explosions, explosion)) continue;
+        _ref = explosions[explosion];
+        for (particle in _ref) {
+          if (!__hasProp.call(_ref, particle)) continue;
+          explosions[explosion][particle].draw(context);
         }
       }
     };
 
     updateObjects = function (playerPosition, velocity, step) {
-      var boost, enemy, explosion, particle, _i, _j, _k, _l, _len, _len1, _len2, _len3;
+      var boost, enemy, explosion, particle, _ref;
       if ((playerPosition != null) && !animating) {
         player.update(playerPosition, velocity);
       }
-      for (_i = 0, _len = enemies.length; _i < _len; _i++) {
-        enemy = enemies[_i];
-        enemy.applyVelocity(velocity);
-        enemy.update();
-        quadtree.insert(enemy);
+      for (enemy in enemies) {
+        if (!__hasProp.call(enemies, enemy)) continue;
+        enemies[enemy].applyVelocity(velocity);
+        enemies[enemy].update();
+        quadtree.insert(enemies[enemy]);
       }
-      for (_j = 0, _len1 = boosts.length; _j < _len1; _j++) {
-        boost = boosts[_j];
-        boost.update();
-        quadtree.insert(boost);
+      for (boost in boosts) {
+        if (!__hasProp.call(boosts, boost)) continue;
+        boosts[boost].update();
+        quadtree.insert(boosts[boost]);
       }
-      for (_k = 0, _len2 = explosions.length; _k < _len2; _k++) {
-        explosion = explosions[_k];
-        for (_l = 0, _len3 = explosion.length; _l < _len3; _l++) {
-          particle = explosion[_l];
-          particle.update();
+      for (explosion in explosions) {
+        if (!__hasProp.call(explosions, explosion)) continue;
+        _ref = explosions[explosion];
+        for (particle in _ref) {
+          if (!__hasProp.call(_ref, particle)) continue;
+          explosions[explosion][particle].update();
         }
       }
     };
@@ -186,14 +189,12 @@
     };
 
     clearObjects = function () {
-      var boost, enemy, explosion, particle, currentPosition;
+      var boost, currentPosition, enemy, explosion, particle, _ref;
       for (enemy in enemies) {
         if (enemies.hasOwnProperty(enemy)) {
           currentPosition = new Vector(enemies[enemy].position.x, enemies[enemy].position.y);
-          // remove from the enemies array, the dots that are out of bounds
           if (isOutOfScreen(currentPosition)) {
             enemies.splice(enemy, 1);
-            //console.log("removed -> " + enemy);
           }
         }
       }
@@ -203,7 +204,6 @@
           currentPosition = new Vector(boosts[boost].position.x, boosts[boost].position.y);
           if (isOutOfScreen(currentPosition)) {
             boosts.splice(boost, 1);
-            //console.log("removed boost -> " + boost);
           }
         }
       }
@@ -250,7 +250,7 @@
     };
 
     gameOver = function () {
-      explosions.push(new Explosion(player.color, player.position, generateStartVelocity(), 3).emit(player.radius));
+      explosions.push(new Explosion(player.color, player.position, generateStartVelocity(), 3).emit(player.size));
       playing = false;
     };
 
@@ -266,7 +266,7 @@
       var obj, _i, _len;
       for (_i = 0, _len = objs.length; _i < _len; _i++) {
         obj = objs[_i];
-        if (Vector.distance(obj.position, target.position) <= target.radius + obj.radius) {
+        if (Vector.distance(obj.position, target.position) <= target.size + obj.radius) {
           if (obj instanceof Enemy) {
             gameOver();
           } else if (obj instanceof Boost) {
