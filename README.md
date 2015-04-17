@@ -1,3 +1,9 @@
 # sinuous
 My version of Hakim El Hattab's Sinuous game.
-Plan to add multiplayer soon =D
+##How to play
+Open pages/test.html
+
+####To do
+- [ ] Highscores
+- [ ] New Boosts
+- [ ] Multiplayer
