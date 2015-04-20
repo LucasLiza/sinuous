@@ -74,7 +74,12 @@ class Sinuous
 
   createBoost = ->
     position = generatePosition()
-    accel = rand(3,5)
+    accel = rand(0.4, 1)
+    clearAction = ->
+      for enemy in enemies
+        explosions.push new Explosion(enemy.color, enemy.position, enemy.velocity, 3).emit 2
+      score += ENEMY_SCORE * enemies.length
+      enemies.splice[0...enemies.length]
     gravityAction = ->
       i = 0
       while i < returnObjects.length
@@ -85,64 +90,78 @@ class Sinuous
           returnObjects[i].accel.add Vector.mult(diffVector, force)
         i++
       return
+    clearBoost = new Boost("clear", clearAction, 200, 10, "purple", position, DEFAULT_VELOCITY, new Vector(accel, accel))
     gravityBoost = new Boost("gravity", gravityAction, 200, 10, "green", position, DEFAULT_VELOCITY, new Vector(accel, accel))
     return gravityBoost
 
   drawObjects = ->
     context.fillStyle = "black"
-    canvas.width = canvas.width
+    @canvas.width = @canvas.width
 
     player.draw context
     player.drawTrail context
 
-    for own enemy of enemies
-      enemies[enemy].draw context
+    for enemy of enemies
+      if enemies.hasOwnProperty enemy
+        enemies[enemy].draw context
 
-    for own boost of boosts
-      boosts[boost].draw context
+    for boost of boosts
+      if boosts.hasOwnProperty boost
+        boosts[boost].draw context
 
-    for own explosion of explosions
-      for own particle of explosions[explosion]
-        explosions[explosion][particle].draw context
+    for explosion of explosions
+      if explosions.hasOwnProperty explosion
+        for particle of explosions[explosion]
+          if explosions[explosion].hasOwnProperty particle
+            explosions[explosion][particle].draw context
     return
 
   updateObjects = (playerPosition, velocity, step) ->
     if playerPosition? and not animating
       player.update playerPosition, velocity
 
-    for own enemy of enemies
-      enemies[enemy].applyVelocity(velocity)
-      enemies[enemy].update()
-      quadtree.insert(enemies[enemy])
+    for enemy of enemies
+      if enemies.hasOwnProperty enemy
+        enemies[enemy].applyVelocity(velocity)
+        enemies[enemy].update()
+        quadtree.insert(enemies[enemy])
 
-    for own boost of boosts
-      boosts[boost].update()
-      quadtree.insert(boosts[boost])
+    for boost of boosts
+      if boosts.hasOwnProperty boost
+        boosts[boost].update()
+        quadtree.insert(boosts[boost])
 
-    for own explosion of explosions
-      for own particle of explosions[explosion]
-        explosions[explosion][particle].update()
+    for explosion of explosions
+      if explosions.hasOwnProperty explosion
+        for particle of explosions[explosion]
+          if explosions[explosion].hasOwnProperty particle
+            explosions[explosion][particle].update()
     return
 
   isOutOfScreen = (position) ->
     position.x < 0 or position.x > SCREEN_WIDTH + 20 or position.y < -20 || position.y > SCREEN_HEIGHT + 20
 
   clearObjects = ->
-    for own enemy of enemies
-      if isOutOfScreen enemies[enemy].position
-        enemies[enemy...1]
+    for enemy of enemies
+      if enemies.hasOwnProperty enemy
+        currentPosition = enemies[enemy].position
+        if isOutOfScreen currentPosition
+          enemies[enemy...1]
 
-    for own boost of boosts
-      if isOutOfScreen boosts[boost].position
-        boosts[boost...1]
+    for boost of boosts
+      if boosts.hasOwnProperty boost
+        if isOutOfScreen boosts[boost].position
+          boosts[boost...1]
 
-    for own explosion of explosions
-      for own particle of explosions[explosion]
-        currentPosition = explosions[explosion][particle].position
-        if isOutOfScreen(currentPosition)
-          explosions[explosion][particle...1]
-        if explosions[explosion].length == 0
-          explosions[explosion...1]
+    for explosion of explosions
+      if explosions.hasOwnProperty explosion
+        for particle of explosions[explosion]
+          if explosions[explosion].hasOwnProperty particle
+            currentPosition = explosions[explosion][particle].position
+            if isOutOfScreen(currentPosition)
+              explosions[explosion][particle...1]
+            if explosions[explosion].length == 0
+              explosions[explosion...1]
     return
 
   increaseDifficulty = (amount) ->
