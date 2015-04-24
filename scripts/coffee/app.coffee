@@ -17,8 +17,6 @@ document.addEventListener 'mousemove', documentMouseMoveHandler, false
 class Sinuous
 
   constructor: (@canvas) ->
-
-  score = 0
   dt = 0
   SCREEN_WIDTH = 0
   SCREEN_HEIGHT = 0
@@ -31,11 +29,6 @@ class Sinuous
   time = undefined
   context = undefined
   now = undefined
-  difficulty = 1.000
-  ENEMY_SCORE = 100
-  DEFAULT_VELOCITY = new Vector -1.3, 1
-
-  step = 1 / 60
   returnObjects = []
   enemies = []
   boosts = []
@@ -78,7 +71,7 @@ class Sinuous
     clearAction = ->
       for enemy in enemies
         explosions.push new Explosion(enemy.color, enemy.position, enemy.velocity, 3).emit 2
-      score += ENEMY_SCORE * enemies.length
+      player.score += ENEMY_SCORE * enemies.length
       enemies.splice[0...enemies.length]
     gravityAction = ->
       i = 0
@@ -92,7 +85,8 @@ class Sinuous
       return
     clearBoost = new Boost("clear", clearAction, 200, 10, "purple", position, DEFAULT_VELOCITY, new Vector(accel, accel))
     gravityBoost = new Boost("gravity", gravityAction, 200, 10, "green", position, DEFAULT_VELOCITY, new Vector(accel, accel))
-    return gravityBoost
+    availableBoosts = [gravityBoost, clearBoost]
+    return availableBoosts[rand(0, availableBoosts.length - 1)]
 
   drawObjects = ->
     context.fillStyle = "black"
@@ -170,13 +164,13 @@ class Sinuous
 
   updateScore = ->
     lastPlayerPosition = player.trail[player.trail.length - 1] or player.position
-    score += 0.4 * difficulty
-    score += Vector.distance(lastPlayerPosition, player.position) * 10
+    player.score += 0.4 * difficulty
+    player.score += Vector.distance(lastPlayerPosition, player.position) * 10
 
   updateHUD = ->
     currentTime = new Date()
     timePassed = currentTime.getTime() - time.getTime()
-    scoreText = "Score: #{Math.floor score}"
+    scoreText = "Score: #{Math.floor player.score}"
     timeText = " Time: #{(timePassed/1000).toFixed(2)}s"
 
     hud[0].innerHTML = scoreText
@@ -246,7 +240,7 @@ class Sinuous
     player = new Player(5, 'green')
     hud.push(document.getElementById("score"))
     hud.push(document.getElementById("time"))
-    score = 0
+    player.score = 0
     difficulty = 1.000
     SCREEN_HEIGHT = @canvas.height
     SCREEN_WIDTH = @canvas.width
@@ -257,7 +251,7 @@ class Sinuous
     enemies = []
     boosts = []
     explosions = []
-    quadtree = new Quadtree ({x: 0,  y: 0,  width: @canvas.height, height: @canvas.width})
+    quadtree = new Quadtree ({x: 0,  y: 0,  width: @canvas.width, height: @canvas.height})
     playing = yes
     return
 

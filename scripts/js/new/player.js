@@ -5,6 +5,7 @@
     function Player(size, color) {
       this.size = size;
       this.color = color;
+      this.score = 0;
       this.boosts = [];
       this.trail = [];
       this.position = new Vector(0, 0);
@@ -82,6 +83,10 @@
         element = _ref1[_j];
         element.add(gameVelocity);
       }
+    };
+
+    Player.prototype.acquire = function(boost) {
+      this.boosts.push(boost);
     };
 
     return Player;

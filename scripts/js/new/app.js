@@ -18,13 +18,11 @@
   document.addEventListener('mousemove', documentMouseMoveHandler, false);
 
   Sinuous = (function() {
-    var DEFAULT_VELOCITY, ENEMIES_FACTOR, ENEMY_SCORE, SCREEN_HEIGHT, SCREEN_WIDTH, action, animating, boosts, checkCollision, clearObjects, context, createBoost, createEnemies, difficulty, drawObjects, dt, enemies, explosions, gameLoop, gameOver, generatePosition, generateStartVelocity, hud, increaseDifficulty, isOutOfScreen, last, now, player, playing, quadtree, rand, removeBoost, returnObjects, score, step, time, timestamp, updateHUD, updateObjects, updateScore;
+    var ENEMIES_FACTOR, SCREEN_HEIGHT, SCREEN_WIDTH, action, animating, boosts, checkCollision, clearObjects, context, createBoost, createEnemies, drawObjects, dt, enemies, explosions, gameLoop, gameOver, generatePosition, generateStartVelocity, hud, increaseDifficulty, isOutOfScreen, last, now, player, playing, quadtree, rand, removeBoost, returnObjects, time, timestamp, updateHUD, updateObjects, updateScore;
 
     function Sinuous(canvas) {
       this.canvas = canvas;
     }
-
-    score = 0;
 
     dt = 0;
 
@@ -49,14 +47,6 @@
     context = void 0;
 
     now = void 0;
-
-    difficulty = 1.000;
-
-    ENEMY_SCORE = 100;
-
-    DEFAULT_VELOCITY = new Vector(-1.3, 1);
-
-    step = 1 / 60;
 
     returnObjects = [];
 
@@ -112,7 +102,7 @@
     };
 
     createBoost = function() {
-      var accel, clearAction, clearBoost, gravityAction, gravityBoost, position;
+      var accel, availableBoosts, clearAction, clearBoost, gravityAction, gravityBoost, position;
       position = generatePosition();
       accel = rand(0.4, 1);
       clearAction = function() {
@@ -121,7 +111,7 @@
           enemy = enemies[_i];
           explosions.push(new Explosion(enemy.color, enemy.position, enemy.velocity, 3).emit(2));
         }
-        score += ENEMY_SCORE * enemies.length;
+        player.score += ENEMY_SCORE * enemies.length;
         return enemies.splice.slice(0, enemies.length);
       };
       gravityAction = function() {
@@ -140,7 +130,8 @@
       };
       clearBoost = new Boost("clear", clearAction, 200, 10, "purple", position, DEFAULT_VELOCITY, new Vector(accel, accel));
       gravityBoost = new Boost("gravity", gravityAction, 200, 10, "green", position, DEFAULT_VELOCITY, new Vector(accel, accel));
-      return gravityBoost;
+      availableBoosts = [gravityBoost, clearBoost];
+      return availableBoosts[rand(0, availableBoosts.length - 1)];
     };
 
     drawObjects = function() {
@@ -203,21 +194,20 @@
       return position.x < 0 || position.x > SCREEN_WIDTH + 20 || position.y < -20 || position.y > SCREEN_HEIGHT + 20;
     };
 
-    clearObjects = function () {
-            var boost, enemy, explosion, particle, currentPosition;
+    clearObjects = function() {
+      var boost, currentPosition, enemy, explosion, particle;
       for (enemy in enemies) {
         if (enemies.hasOwnProperty(enemy)) {
-          currentPosition = new Vector(enemies[enemy].position.x, enemies[enemy].position.y);
+          currentPosition = enemies[enemy].position;
           if (isOutOfScreen(currentPosition)) {
-            enemies.splice(enemy, 1);
+            enemies.slice(enemy, 1);
           }
         }
       }
       for (boost in boosts) {
         if (boosts.hasOwnProperty(boost)) {
-          currentPosition = new Vector(boosts[boost].particle.position.x, boosts[boost].particle.position.y);
-          if (isOutOfScreen(currentPosition)) {
-            boosts.splice(boost, 1);
+          if (isOutOfScreen(boosts[boost].position)) {
+            boosts.slice(boost, 1);
           }
         }
       }
@@ -227,10 +217,10 @@
             if (explosions[explosion].hasOwnProperty(particle)) {
               currentPosition = explosions[explosion][particle].position;
               if (isOutOfScreen(currentPosition)) {
-                explosions[explosion].splice(particle, 1);
+                explosions[explosion].slice(particle, 1);
               }
               if (explosions[explosion].length === 0) {
-                explosions.splice(explosion, 1);
+                explosions.slice(explosion, 1);
               }
             }
           }
@@ -245,15 +235,15 @@
     updateScore = function() {
       var lastPlayerPosition;
       lastPlayerPosition = player.trail[player.trail.length - 1] || player.position;
-      score += 0.4 * difficulty;
-      return score += Vector.distance(lastPlayerPosition, player.position) * 10;
+      player.score += 0.4 * difficulty;
+      return player.score += Vector.distance(lastPlayerPosition, player.position) * 10;
     };
 
     updateHUD = function() {
       var currentTime, scoreText, timePassed, timeText;
       currentTime = new Date();
       timePassed = currentTime.getTime() - time.getTime();
-      scoreText = "Score: " + (Math.floor(score));
+      scoreText = "Score: " + (Math.floor(player.score));
       timeText = " Time: " + ((timePassed / 1000).toFixed(2)) + "s";
       hud[0].innerHTML = scoreText;
       hud[1].innerHTML = timeText;
@@ -328,11 +318,12 @@
     };
 
     Sinuous.prototype.init = function(act) {
+      var difficulty;
       action = act;
       player = new Player(5, 'green');
       hud.push(document.getElementById("score"));
       hud.push(document.getElementById("time"));
-      score = 0;
+      player.score = 0;
       difficulty = 1.000;
       SCREEN_HEIGHT = this.canvas.height;
       SCREEN_WIDTH = this.canvas.width;
@@ -346,8 +337,8 @@
       quadtree = new Quadtree({
         x: 0,
         y: 0,
-        width: this.canvas.height,
-        height: this.canvas.width
+        width: this.canvas.width,
+        height: this.canvas.height
       });
       playing = true;
     };

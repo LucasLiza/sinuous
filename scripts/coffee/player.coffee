@@ -1,5 +1,6 @@
 class Player
   constructor: (@size, @color) ->
+    @score = 0
     @boosts = []
     @trail = []
     @position = new Vector 0, 0
@@ -63,7 +64,11 @@ class Player
 
     for element in @trail
       element.add gameVelocity
-
     return
+
+  acquire: (boost) ->
+    @boosts.push(boost);
+    return
+
 
 if window? then window.Player = Player else exports.Player = Player
