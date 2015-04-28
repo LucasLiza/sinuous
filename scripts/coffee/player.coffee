@@ -1,5 +1,6 @@
 class Player
   constructor: (@size, @color) ->
+    @difficulty = 1
     @score = 0
     @boosts = []
     @trail = []
@@ -70,5 +71,12 @@ class Player
     @boosts.push(boost);
     return
 
+  increaseScore: (amount) ->
+    @score += amount
+    return
+
+  updateDifficulty: (amount) ->
+    @difficulty += amount
+    return
 
 if window? then window.Player = Player else exports.Player = Player

@@ -5,6 +5,7 @@
     function Player(size, color) {
       this.size = size;
       this.color = color;
+      this.difficulty = 1;
       this.score = 0;
       this.boosts = [];
       this.trail = [];
@@ -87,6 +88,14 @@
 
     Player.prototype.acquire = function(boost) {
       this.boosts.push(boost);
+    };
+
+    Player.prototype.increaseScore = function(amount) {
+      this.score += amount;
+    };
+
+    Player.prototype.updateDifficulty = function(amount) {
+      this.difficulty += amount;
     };
 
     return Player;

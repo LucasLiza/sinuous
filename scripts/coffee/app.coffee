@@ -72,7 +72,7 @@ class Sinuous
       for enemy in enemies
         explosions.push new Explosion(enemy.color, enemy.position, enemy.velocity, 3).emit 2
       player.score += ENEMY_SCORE * enemies.length
-      enemies.splice[0...enemies.length]
+      enemies.splice(0, enemies.length)
     gravityAction = ->
       i = 0
       while i < returnObjects.length
@@ -95,40 +95,33 @@ class Sinuous
     player.draw context
     player.drawTrail context
 
-    for enemy of enemies
-      if enemies.hasOwnProperty enemy
+    for own enemy of enemies
         enemies[enemy].draw context
 
-    for boost of boosts
-      if boosts.hasOwnProperty boost
+    for own boost of boosts
         boosts[boost].draw context
 
-    for explosion of explosions
-      if explosions.hasOwnProperty explosion
-        for particle of explosions[explosion]
-          if explosions[explosion].hasOwnProperty particle
+    for own explosion of explosions
+        for own particle of explosions[explosion]
             explosions[explosion][particle].draw context
     return
 
   updateObjects = (playerPosition, velocity, step) ->
     if playerPosition? and not animating
       player.update playerPosition, velocity
+      player.updateDifficulty 0.0008
 
-    for enemy of enemies
-      if enemies.hasOwnProperty enemy
+    for own enemy of enemies
         enemies[enemy].applyVelocity(velocity)
         enemies[enemy].update()
         quadtree.insert(enemies[enemy])
 
-    for boost of boosts
-      if boosts.hasOwnProperty boost
+    for own boost of boosts
         boosts[boost].update()
         quadtree.insert(boosts[boost])
 
-    for explosion of explosions
-      if explosions.hasOwnProperty explosion
-        for particle of explosions[explosion]
-          if explosions[explosion].hasOwnProperty particle
+    for own explosion of explosions
+        for own particle of explosions[explosion]
             explosions[explosion][particle].update()
     return
 
@@ -136,35 +129,28 @@ class Sinuous
     position.x < 0 or position.x > SCREEN_WIDTH + 20 or position.y < -20 || position.y > SCREEN_HEIGHT + 20
 
   clearObjects = ->
-    for enemy of enemies
-      if enemies.hasOwnProperty enemy
+    for own enemy of enemies
         currentPosition = enemies[enemy].position
         if isOutOfScreen currentPosition
-          enemies[enemy...1]
+          enemies.splice(enemy, 1)
 
-    for boost of boosts
-      if boosts.hasOwnProperty boost
+    for own boost of boosts
         if isOutOfScreen boosts[boost].position
-          boosts[boost...1]
+          boosts.splice(boost,1)
+          console.log('Boosts',enemies.length)
 
-    for explosion of explosions
-      if explosions.hasOwnProperty explosion
-        for particle of explosions[explosion]
-          if explosions[explosion].hasOwnProperty particle
+    for own explosion of explosions
+        for own particle of explosions[explosion]
             currentPosition = explosions[explosion][particle].position
             if isOutOfScreen(currentPosition)
-              explosions[explosion][particle...1]
+              explosions[explosion].splice(particle,1)
             if explosions[explosion].length == 0
-              explosions[explosion...1]
-    return
-
-  increaseDifficulty = (amount) ->
-    difficulty += amount
+              explosions.splice(explosion, 1)
     return
 
   updateScore = ->
     lastPlayerPosition = player.trail[player.trail.length - 1] or player.position
-    player.score += 0.4 * difficulty
+    player.score += 0.4 * player.difficulty
     player.score += Vector.distance(lastPlayerPosition, player.position) * 10
 
   updateHUD = ->
@@ -184,7 +170,7 @@ class Sinuous
 
   removeBoost = (boost) ->
     index = boosts.indexOf(boost)
-    boosts[index...1] if index > -1
+    boosts.splice(index, 1) if index > -1
     return
 
   checkCollision = (objs, target) ->
@@ -205,11 +191,10 @@ class Sinuous
       dt = dt + Math.min(1, (now - last) / 1000)
       while dt > step
         dt = dt - step
-        increaseDifficulty 0.0008
         updateScore()
-        diffVelocity = Vector.mult(DEFAULT_VELOCITY, difficulty)
+        diffVelocity = Vector.mult(DEFAULT_VELOCITY, player.difficulty)
 
-        if enemies.length < Math.min(150, ENEMIES_FACTOR * difficulty)
+        if enemies.length < Math.min(30, ENEMIES_FACTOR * player.difficulty)
           createEnemies()
 
         if chanceOfBoost > 0.9975
@@ -241,7 +226,6 @@ class Sinuous
     hud.push(document.getElementById("score"))
     hud.push(document.getElementById("time"))
     player.score = 0
-    difficulty = 1.000
     SCREEN_HEIGHT = @canvas.height
     SCREEN_WIDTH = @canvas.width
     ENEMIES_FACTOR = (SCREEN_WIDTH / SCREEN_HEIGHT) * 30

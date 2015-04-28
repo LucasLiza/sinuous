@@ -1,5 +1,6 @@
 (function() {
-  var Sinuous, documentMouseMoveHandler, mouse;
+  var Sinuous, documentMouseMoveHandler, mouse,
+    __hasProp = {}.hasOwnProperty;
 
   mouse = new Vector(100, 100);
 
@@ -18,7 +19,7 @@
   document.addEventListener('mousemove', documentMouseMoveHandler, false);
 
   Sinuous = (function() {
-    var ENEMIES_FACTOR, SCREEN_HEIGHT, SCREEN_WIDTH, action, animating, boosts, checkCollision, clearObjects, context, createBoost, createEnemies, drawObjects, dt, enemies, explosions, gameLoop, gameOver, generatePosition, generateStartVelocity, hud, increaseDifficulty, isOutOfScreen, last, now, player, playing, quadtree, rand, removeBoost, returnObjects, time, timestamp, updateHUD, updateObjects, updateScore;
+    var ENEMIES_FACTOR, SCREEN_HEIGHT, SCREEN_WIDTH, action, animating, boosts, checkCollision, clearObjects, context, createBoost, createEnemies, drawObjects, dt, enemies, explosions, gameLoop, gameOver, generatePosition, generateStartVelocity, hud, isOutOfScreen, last, now, player, playing, quadtree, rand, removeBoost, returnObjects, time, timestamp, updateHUD, updateObjects, updateScore;
 
     function Sinuous(canvas) {
       this.canvas = canvas;
@@ -112,7 +113,7 @@
           explosions.push(new Explosion(enemy.color, enemy.position, enemy.velocity, 3).emit(2));
         }
         player.score += ENEMY_SCORE * enemies.length;
-        return enemies.splice.slice(0, enemies.length);
+        return enemies.splice(0, enemies.length);
       };
       gravityAction = function() {
         var diffVector, force, i;
@@ -135,57 +136,52 @@
     };
 
     drawObjects = function() {
-      var boost, enemy, explosion, particle;
+      var boost, enemy, explosion, particle, _ref;
       context.fillStyle = "black";
       this.canvas.width = this.canvas.width;
       player.draw(context);
       player.drawTrail(context);
       for (enemy in enemies) {
-        if (enemies.hasOwnProperty(enemy)) {
-          enemies[enemy].draw(context);
-        }
+        if (!__hasProp.call(enemies, enemy)) continue;
+        enemies[enemy].draw(context);
       }
       for (boost in boosts) {
-        if (boosts.hasOwnProperty(boost)) {
-          boosts[boost].draw(context);
-        }
+        if (!__hasProp.call(boosts, boost)) continue;
+        boosts[boost].draw(context);
       }
       for (explosion in explosions) {
-        if (explosions.hasOwnProperty(explosion)) {
-          for (particle in explosions[explosion]) {
-            if (explosions[explosion].hasOwnProperty(particle)) {
-              explosions[explosion][particle].draw(context);
-            }
-          }
+        if (!__hasProp.call(explosions, explosion)) continue;
+        _ref = explosions[explosion];
+        for (particle in _ref) {
+          if (!__hasProp.call(_ref, particle)) continue;
+          explosions[explosion][particle].draw(context);
         }
       }
     };
 
     updateObjects = function(playerPosition, velocity, step) {
-      var boost, enemy, explosion, particle;
+      var boost, enemy, explosion, particle, _ref;
       if ((playerPosition != null) && !animating) {
         player.update(playerPosition, velocity);
+        player.updateDifficulty(0.0008);
       }
       for (enemy in enemies) {
-        if (enemies.hasOwnProperty(enemy)) {
-          enemies[enemy].applyVelocity(velocity);
-          enemies[enemy].update();
-          quadtree.insert(enemies[enemy]);
-        }
+        if (!__hasProp.call(enemies, enemy)) continue;
+        enemies[enemy].applyVelocity(velocity);
+        enemies[enemy].update();
+        quadtree.insert(enemies[enemy]);
       }
       for (boost in boosts) {
-        if (boosts.hasOwnProperty(boost)) {
-          boosts[boost].update();
-          quadtree.insert(boosts[boost]);
-        }
+        if (!__hasProp.call(boosts, boost)) continue;
+        boosts[boost].update();
+        quadtree.insert(boosts[boost]);
       }
       for (explosion in explosions) {
-        if (explosions.hasOwnProperty(explosion)) {
-          for (particle in explosions[explosion]) {
-            if (explosions[explosion].hasOwnProperty(particle)) {
-              explosions[explosion][particle].update();
-            }
-          }
+        if (!__hasProp.call(explosions, explosion)) continue;
+        _ref = explosions[explosion];
+        for (particle in _ref) {
+          if (!__hasProp.call(_ref, particle)) continue;
+          explosions[explosion][particle].update();
         }
       }
     };
@@ -195,47 +191,41 @@
     };
 
     clearObjects = function() {
-      var boost, currentPosition, enemy, explosion, particle;
+      var boost, currentPosition, enemy, explosion, particle, _ref;
       for (enemy in enemies) {
-        if (enemies.hasOwnProperty(enemy)) {
-          currentPosition = enemies[enemy].position;
-          if (isOutOfScreen(currentPosition)) {
-            enemies.slice(enemy, 1);
-          }
+        if (!__hasProp.call(enemies, enemy)) continue;
+        currentPosition = enemies[enemy].position;
+        if (isOutOfScreen(currentPosition)) {
+          enemies.splice(enemy, 1);
         }
       }
       for (boost in boosts) {
-        if (boosts.hasOwnProperty(boost)) {
-          if (isOutOfScreen(boosts[boost].position)) {
-            boosts.slice(boost, 1);
-          }
+        if (!__hasProp.call(boosts, boost)) continue;
+        if (isOutOfScreen(boosts[boost].position)) {
+          boosts.splice(boost, 1);
+          console.log('Boosts', enemies.length);
         }
       }
       for (explosion in explosions) {
-        if (explosions.hasOwnProperty(explosion)) {
-          for (particle in explosions[explosion]) {
-            if (explosions[explosion].hasOwnProperty(particle)) {
-              currentPosition = explosions[explosion][particle].position;
-              if (isOutOfScreen(currentPosition)) {
-                explosions[explosion].slice(particle, 1);
-              }
-              if (explosions[explosion].length === 0) {
-                explosions.slice(explosion, 1);
-              }
-            }
+        if (!__hasProp.call(explosions, explosion)) continue;
+        _ref = explosions[explosion];
+        for (particle in _ref) {
+          if (!__hasProp.call(_ref, particle)) continue;
+          currentPosition = explosions[explosion][particle].position;
+          if (isOutOfScreen(currentPosition)) {
+            explosions[explosion].splice(particle, 1);
+          }
+          if (explosions[explosion].length === 0) {
+            explosions.splice(explosion, 1);
           }
         }
       }
-    };
-
-    increaseDifficulty = function(amount) {
-      difficulty += amount;
     };
 
     updateScore = function() {
       var lastPlayerPosition;
       lastPlayerPosition = player.trail[player.trail.length - 1] || player.position;
-      player.score += 0.4 * difficulty;
+      player.score += 0.4 * player.difficulty;
       return player.score += Vector.distance(lastPlayerPosition, player.position) * 10;
     };
 
@@ -258,7 +248,7 @@
       var index;
       index = boosts.indexOf(boost);
       if (index > -1) {
-        boosts.slice(index, 1);
+        boosts.splice(index, 1);
       }
     };
 
@@ -286,10 +276,9 @@
         dt = dt + Math.min(1, (now - last) / 1000);
         while (dt > step) {
           dt = dt - step;
-          increaseDifficulty(0.0008);
           updateScore();
-          diffVelocity = Vector.mult(DEFAULT_VELOCITY, difficulty);
-          if (enemies.length < Math.min(150, ENEMIES_FACTOR * difficulty)) {
+          diffVelocity = Vector.mult(DEFAULT_VELOCITY, player.difficulty);
+          if (enemies.length < Math.min(30, ENEMIES_FACTOR * player.difficulty)) {
             createEnemies();
           }
           if (chanceOfBoost > 0.9975) {
@@ -318,13 +307,11 @@
     };
 
     Sinuous.prototype.init = function(act) {
-      var difficulty;
       action = act;
       player = new Player(5, 'green');
       hud.push(document.getElementById("score"));
       hud.push(document.getElementById("time"));
       player.score = 0;
-      difficulty = 1.000;
       SCREEN_HEIGHT = this.canvas.height;
       SCREEN_WIDTH = this.canvas.width;
       ENEMIES_FACTOR = (SCREEN_WIDTH / SCREEN_HEIGHT) * 30;
